@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """KoalaByte Firmware Main Entry Point
 
-Orchestrates hardware initialization, KORA AI companion,
+Orchestrates hardware initialization, KillerKoala AI companion,
 and core penetration testing tools.
 """
 
@@ -16,7 +16,7 @@ from config import (
     get_security_config,
     get_ui_config,
 )
-from cyberpet_ai import KORACompanion
+from cyberpet_ai import KillerKoalaCompanion
 
 
 # Configure logging
@@ -43,7 +43,7 @@ class KoalaByteDevice:
         self.ui_config = get_ui_config()
         
         # Initialize KORA companion
-        self.kora = KORACompanion(self.pet_config)
+        self.killerkoala = KillerKoalaCompanion(self.pet_config)
         
         # Hardware modules (stub implementations for now)
         self.display = None
@@ -72,9 +72,9 @@ class KoalaByteDevice:
         logger.info("[2/5] Display Initialization...")
         self._init_display()
         
-        # Load KORA
-        logger.info("[3/5] Loading KORA AI Companion...")
-        self._init_kora()
+        # Load KillerKoala
+        logger.info("[3/5] Loading KillerKoala AI Companion...")
+        self._init_killerkoala()
         
         # Initialize wireless modules
         logger.info("[4/5] Wireless Module Initialization...")
@@ -105,7 +105,7 @@ class KoalaByteDevice:
         logger.info("  - Backlight enabled")
         logger.info("  - Display ready")
     
-    def _init_kora(self):
+    def _init_killerkoala(self):
         """Initialize KORA AI companion"""
         logger.info(f"  - KORA awakening...")
         greeting = self.kora.get_idle_response()
@@ -136,16 +136,16 @@ class KoalaByteDevice:
         logger.info("KOALABYTE v2.0 - MAIN MENU")
         logger.info("="*60)
         logger.info("\nSelect Tool:")
-        logger.info("  [F1] WiFi Scanner (KORA Level XP: +10)")
-        logger.info("  [F2] BLE Discovery (CORA Level XP: +15)")
-        logger.info("  [F3] IR Transceiver (CORA Level XP: +8)")
+        logger.info("  [F1] WiFi Scanner (KillerKoala Level XP: +10)")
+        logger.info("  [F2] BLE Discovery (KillerKoala Level XP: +15)")
+        logger.info("  [F3] IR Transceiver (KillerKoala Level XP: +8)")
         logger.info("  [F4] NFC/RFID Emulator (CORA Level XP: +20)")
-        logger.info("  [F5] Attack Mode (CORA Level XP: +50)")
+        logger.info("  [F5] Attack Mode (KillerKoala Level XP: +50)")
         logger.info("  [F6] Settings & Status")
         logger.info("\n" + "-"*60)
         
-        stats = self.kora.get_stats_summary()
-        logger.info(f"KORA Status: Lvl {stats['level']} {stats['tier'].upper()}")
+        stats = self.killerkoala.get_stats_summary()
+        logger.info(f"killerkoala Status: Lvl {stats['level']} {stats['tier'].upper()}")
         logger.info(f"  Mood: {stats['mood']}")
         logger.info(f"  XP to Next: {stats['xp_to_next_level']}")
         logger.info(f"  Total Actions: {stats['actions']['total_actions']}")
@@ -161,7 +161,7 @@ class KoalaByteDevice:
         logger.info("    * CoffeeShop-5G (WPA3)")
         
         xp, response = self.kora.report_action("wifi_scan")
-        logger.info(f"\nKORA: {response}\n")
+        logger.info(f"\nKillerKoala: {response}\n")
     
     def run_ble_discovery(self):
         """Run BLE discovery tool"""
@@ -173,7 +173,7 @@ class KoalaByteDevice:
         logger.info("    * Unknown Device (5C3B9F)")
         
         xp, response = self.kora.report_action("ble_discovery")
-        logger.info(f"\nKORA: {response}\n")
+        logger.info(f"\nKillerKoala: {response}\n")
     
     def run_ir_transceiver(self):
         """Run IR learning and transmission"""
@@ -183,7 +183,7 @@ class KoalaByteDevice:
         logger.info("Transmission complete.")
         
         xp, response = self.kora.report_action("ir_transmit")
-        logger.info(f"\nKORA: {response}\n")
+        logger.info(f"\nKillerKoala: {response}\n")
     
     def run_nfc_emulator(self):
         """Run NFC/RFID emulation"""
@@ -195,7 +195,7 @@ class KoalaByteDevice:
         logger.info("Clone successful. Emulation active.")
         
         xp, response = self.kora.report_action("nfc_clone")
-        logger.info(f"\nKORA: {response}\n")
+        logger.info(f"\nKillerKoala: {response}\n")
     
     def run_attack_mode(self):
         """Run advanced exploit mode"""
@@ -206,17 +206,17 @@ class KoalaByteDevice:
         logger.info("  - Handshakes captured: 1")
         logger.info("Attack complete.")
         
-        xp, response = self.kora.report_action("exploit_execute")
-        logger.info(f"\nKORA: {response}\n")
+        xp, response = self.killerkoala.report_action("exploit_execute")
+        logger.info(f"\nKillerKoala: {response}\n")
     
     def run_settings(self):
         """Display settings and device status"""
-        stats = self.kora.get_stats_summary()
+        stats = self.killerkoala.get_stats_summary()
         
         logger.info("\n" + "="*60)
-        logger.info("DEVICE STATUS & KORA STATS")
+        logger.info("DEVICE STATUS & KillerKoala STATS")
         logger.info("="*60)
-        logger.info(f"\nKORA Profile:")
+        logger.info(f"\nKillerKoala Profile:")
         logger.info(f"  Name: {stats['name']}")
         logger.info(f"  Level: {stats['level']}")
         logger.info(f"  Tier: {stats['tier'].upper()}")

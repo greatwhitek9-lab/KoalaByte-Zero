@@ -1,0 +1,6 @@
+# Enable wireless monitor mode
+sudo modprobe -r brcmfmac
+sudo modprobe brcmfmac
+
+# Enable SPI for display
+echo "dtparam=spi=on" | sudo tee -a /boot/firmware/config.txt

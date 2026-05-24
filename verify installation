@@ -1,0 +1,3 @@
+jetson_release
+nvcc --version
+cuda-smi

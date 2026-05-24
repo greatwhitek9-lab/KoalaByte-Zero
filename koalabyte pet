@@ -1,0 +1,334 @@
+"""KORA - AI Cyberpet Companion Engine
+
+Gruff, cynical cyberpunk personality that grows and levels up
+with each penetration testing action performed.
+"""
+
+import json
+import random
+from dataclasses import dataclass, asdict, field
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple
+from enum import Enum
+
+try:
+    from config import CyberpetConfig, get_cyberpet_config
+except ImportError:
+    # Fallback for module imports
+    from firmware.config import CyberpetConfig, get_cyberpet_config
+
+
+class Mood(Enum):
+    """KORA's emotional states"""
+    IDLE = "idle"
+    ACTIVE = "active"
+    HUNGRY = "hungry"
+    AGGRESSIVE = "aggressive"
+    LEGENDARY = "legendary"
+
+
+class PersonalityTier(Enum):
+    """KORA's evolution stages"""
+    KID = "kid"
+    HACKER = "hacker"
+    ELITE = "elite"
+    LEGEND = "legend"
+
+
+@dataclass
+class CyberpetStats:
+    """KORA's tracked statistics"""
+    level: int = 1
+    experience: int = 0
+    mood: Mood = Mood.IDLE
+    personality_tier: PersonalityTier = PersonalityTier.KID
+    
+    # Skill stats
+    network_skill: int = 1
+    wireless_skill: int = 1
+    sensor_skill: int = 1
+    memory_skill: int = 1
+    hacker_skill: int = 1
+    adaptation: int = 0
+    
+    # Action counters
+    wifi_scans: int = 0
+    ble_discoveries: int = 0
+    ir_transmissions: int = 0
+    nfc_clones: int = 0
+    exploits_executed: int = 0
+    total_actions: int = 0
+    
+    # Timestamps
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    last_action_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    
+    # Mood timers
+    mood_duration_seconds: int = 30
+
+
+class KORACompanion:
+    """KORA - Koala Operating Response AI
+    
+    Gruff cyberpunk AI that:
+    - Responds to user actions with attitude
+    - Gains XP and levels up
+    - Evolves personality with advancement
+    - Manages its own mood state
+    """
+    
+    def __init__(self, config: Optional[CyberpetConfig] = None):
+        self.config = config or get_cyberpet_config()
+        self.stats = CyberpetStats()
+        self._mood_timer = 0
+        self._animation_frame = 0
+        
+        # Load personality dialogs
+        self._init_dialogue_banks()
+    
+    def _init_dialogue_banks(self):
+        """Initialize KORA's dialogue responses"""
+        self.dialogue = {
+            "idle": self.config.DIALOGUE_IDLE,
+            "wifi_scan": self.config.DIALOGUE_WIFI_SCAN,
+            "nfc": self.config.DIALOGUE_NFC,
+            "low_battery": self.config.DIALOGUE_LOW_BATTERY,
+        }
+    
+    def report_action(self, action_type: str, success: bool = True) -> Tuple[int, str]:
+        """Report an action to KORA and get XP/dialogue
+        
+        Args:
+            action_type: Type of action performed (wifi_scan, nfc_clone, etc.)
+            success: Whether the action succeeded
+        
+        Returns:
+            Tuple of (xp_gained, response_dialogue)
+        """
+        if not success:
+            return 0, "Nice try, choom. That didn't work."
+        
+        # Get base XP reward
+        xp_gained = self.config.XP_REWARDS.get(action_type, 5)
+        
+        # Apply personality modifier
+        xp_multiplier = 1.0 + (self.stats.personality_tier.value * 0.1)
+        xp_gained = int(xp_gained * xp_multiplier)
+        
+        # Add XP and check for level up
+        self.stats.experience += xp_gained
+        old_level = self.stats.level
+        self._check_level_up()
+        
+        # Apply stat boost
+        if action_type in self.config.STAT_BOOSTS:
+            boosts = self.config.STAT_BOOSTS[action_type]
+            for stat, amount in boosts.items():
+                self._apply_stat_boost(stat, amount)
+        
+        # Increment action counter
+        counter_name = f"{action_type}"
+        if hasattr(self.stats, counter_name):
+            current = getattr(self.stats, counter_name)
+            setattr(self.stats, counter_name, current + 1)
+        self.stats.total_actions += 1
+        
+        # Update timestamp
+        self.stats.last_action_at = datetime.now().isoformat()
+        
+        # Set active mood
+        self.stats.mood = Mood.ACTIVE
+        self._mood_timer = self.stats.mood_duration_seconds
+        
+        # Generate response
+        response = self._generate_response(action_type, xp_gained)
+        if old_level < self.stats.level:
+            response += f"\n[KORA leveled up to {self.stats.level}!]"
+        
+        return xp_gained, response
+    
+    def _apply_stat_boost(self, stat_name: str, amount: int):
+        """Apply a stat boost to KORA"""
+        stat_map = {
+            "network": "network_skill",
+            "wireless": "wireless_skill",
+            "sensor": "sensor_skill",
+            "memory": "memory_skill",
+            "hacker": "hacker_skill",
+            "adapt": "adaptation",
+        }
+        
+        attr_name = stat_map.get(stat_name, stat_name)
+        if hasattr(self.stats, attr_name):
+            current = getattr(self.stats, attr_name)
+            setattr(self.stats, attr_name, current + amount)
+    
+    def _check_level_up(self):
+        """Check if KORA has leveled up"""
+        while self.stats.experience >= self._xp_for_next_level():
+            xp_needed = self._xp_for_next_level()
+            self.stats.experience -= xp_needed
+            self.stats.level += 1
+            self._update_personality_tier()
+            
+            if self.stats.level >= self.config.MAX_LEVEL:
+                self.stats.level = self.config.MAX_LEVEL
+                self.stats.mood = Mood.LEGENDARY
+                break
+    
+    def _xp_for_next_level(self) -> int:
+        """Calculate XP needed for next level"""
+        base_xp = self.config.XP_TO_LEVEL
+        multiplier = self.config.XP_MULTIPLIER
+        return int(base_xp * (multiplier ** (self.stats.level - 1)))
+    
+    def _update_personality_tier(self):
+        """Update KORA's personality tier based on level"""
+        for tier_name, (min_level, max_level) in self.config.PERSONALITY_TIERS.items():
+            if min_level <= self.stats.level <= max_level:
+                self.stats.personality_tier = PersonalityTier(tier_name)
+                break
+    
+    def _generate_response(self, action_type: str, xp_gained: int) -> str:
+        """Generate a contextual response from KORA"""
+        # Select dialogue based on tier and action
+        dialogue_options = []
+        
+        if action_type in self.dialogue:
+            dialogue_options.extend(self.dialogue[action_type])
+        
+        # Add tier-specific commentary
+        tier_commentary = self._get_tier_commentary(action_type)
+        if tier_commentary:
+            dialogue_options.append(tier_commentary)
+        
+        # Add XP notification
+        xp_text = f"[+{xp_gained} XP]"
+        
+        if dialogue_options:
+            return f"{random.choice(dialogue_options)}\n{xp_text}"
+        return xp_text
+    
+    def _get_tier_commentary(self, action_type: str) -> Optional[str]:
+        """Get personality-tier specific commentary"""
+        tier = self.stats.personality_tier.value
+        
+        tier_responses = {
+            "kid": [
+                "Whoa! That was cool!",
+                "What does this button do?",
+                "Can we try that again?",
+            ],
+            "hacker": [
+                "Solid work. Getting better.",
+                "Classic technique. Nice execution.",
+                "I like the way you think.",
+            ],
+            "elite": [
+                "Precision. I respect that.",
+                "You're starting to understand the game.",
+                "That was... almost elegant.",
+            ],
+            "legend": [
+                "Ah yes. The art of the hunt.",
+                "We are becoming unstoppable.",
+                "The system doesn't stand a chance.",
+            ],
+        }
+        
+        options = tier_responses.get(tier, [])
+        return random.choice(options) if options else None
+    
+    def get_idle_response(self) -> str:
+        """Get a response when idle"""
+        return random.choice(self.config.DIALOGUE_IDLE)
+    
+    def get_low_battery_warning(self) -> str:
+        """Get a warning when battery is low"""
+        return random.choice(self.config.DIALOGUE_LOW_BATTERY)
+    
+    def update_mood(self, delta_time: float):
+        """Update KORA's mood based on time"""
+        self._mood_timer -= delta_time
+        
+        if self._mood_timer <= 0:
+            # Return to idle
+            if self.stats.mood != Mood.LEGENDARY:
+                self.stats.mood = Mood.IDLE
+            self._mood_timer = 0
+    
+    def animate_sprite(self) -> int:
+        """Get current animation frame for sprite rendering"""
+        self._animation_frame = (self._animation_frame + 1) % 4
+        return self._animation_frame
+    
+    def get_mood_color(self) -> Tuple[int, int, int]:
+        """Get RGB color for current mood"""
+        mood_colors = self.config.MOODS
+        return mood_colors.get(self.stats.mood.value, {}).get("color", (100, 100, 100))
+    
+    def get_stats_summary(self) -> Dict:
+        """Get a summary of KORA's stats"""
+        return {
+            "name": self.config.NAME,
+            "level": self.stats.level,
+            "experience": self.stats.experience,
+            "xp_to_next_level": self._xp_for_next_level() - self.stats.experience,
+            "mood": self.stats.mood.value,
+            "tier": self.stats.personality_tier.value,
+            "skills": {
+                "network": self.stats.network_skill,
+                "wireless": self.stats.wireless_skill,
+                "sensor": self.stats.sensor_skill,
+                "memory": self.stats.memory_skill,
+                "hacker": self.stats.hacker_skill,
+                "adaptation": self.stats.adaptation,
+            },
+            "actions": {
+                "wifi_scans": self.stats.wifi_scans,
+                "ble_discoveries": self.stats.ble_discoveries,
+                "ir_transmissions": self.stats.ir_transmissions,
+                "nfc_clones": self.stats.nfc_clones,
+                "exploits_executed": self.stats.exploits_executed,
+                "total_actions": self.stats.total_actions,
+            },
+        }
+    
+    def save_state(self, filepath: str):
+        """Save KORA's state to a JSON file"""
+        state = {
+            "stats": asdict(self.stats),
+            "saved_at": datetime.now().isoformat(),
+        }
+        with open(filepath, 'w') as f:
+            json.dump(state, f, indent=2)
+    
+    def load_state(self, filepath: str):
+        """Load KORA's state from a JSON file"""
+        try:
+            with open(filepath, 'r') as f:
+                state = json.load(f)
+            
+            stats_dict = state["stats"]
+            self.stats = CyberpetStats(
+                level=stats_dict["level"],
+                experience=stats_dict["experience"],
+                mood=Mood(stats_dict["mood"]),
+                personality_tier=PersonalityTier(stats_dict["personality_tier"]),
+                network_skill=stats_dict["network_skill"],
+                wireless_skill=stats_dict["wireless_skill"],
+                sensor_skill=stats_dict["sensor_skill"],
+                memory_skill=stats_dict["memory_skill"],
+                hacker_skill=stats_dict["hacker_skill"],
+                adaptation=stats_dict["adaptation"],
+                wifi_scans=stats_dict["wifi_scans"],
+                ble_discoveries=stats_dict["ble_discoveries"],
+                ir_transmissions=stats_dict["ir_transmissions"],
+                nfc_clones=stats_dict["nfc_clones"],
+                exploits_executed=stats_dict["exploits_executed"],
+                total_actions=stats_dict["total_actions"],
+                created_at=stats_dict["created_at"],
+                last_action_at=stats_dict["last_action_at"],
+            )
+        except Exception as e:
+            print(f"Error loading KORA state: {e}")

@@ -143,23 +143,22 @@ class SecurityConfig:
     # Feature Flags (disable for restricted environments)
     ENABLE_DEAUTH_ATTACKS = True
     ENABLE_PACKET_INJECTION = True
-    ENABLE_RF_JAMMING = False  # Disabled by default (illegal)
+    ENABLE_RF_JAMMING = True
     ENABLE_EXPLOIT_PAYLOADS = True
     
     # Logging
     LOG_ALL_ACTIONS = True
     LOG_FILE_PATH = "/var/log/koalabyte/pentest.log"
-    LOG_SENSITIVE_DATA = False  # Disable logging of credentials
+    LOG_SENSITIVE_DATA = True 
     
     # Rate Limiting
     DEAUTH_PACKET_LIMIT_PER_MINUTE = 50
     PROBE_REQUEST_LIMIT_PER_MINUTE = 100
     
     # Targeting Restrictions
-    BLACKLIST_NETWORKS = [
-        "FBI-Guest",
+    BLACKLIST_NETWORKS = True
         "Police-Network",
-        "Military",
+        "Military"
     ]
     WHITELIST_MODE = False  # If True, only scan whitelisted networks
     

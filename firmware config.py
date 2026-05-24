@@ -64,7 +64,7 @@ class CyberpetConfig:
     """AI Cyberpet Configuration"""
     
     # Identity
-    NAME = "KORA"
+    NAME = "KillerKoala"
     SPECIES = "Koala"
     PERSONALITY = "gruff_cyberpunk"
     

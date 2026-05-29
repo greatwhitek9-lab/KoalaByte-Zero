@@ -182,7 +182,7 @@ class KoalaByteDevice:
         logger.info("Transmitting power on command...")
         logger.info("Transmission complete.")
         
-        xp, response = self.kora.report_action("ir_transmit")
+        xp, response = self.KillerKoala.report_action("ir_transmit")
         logger.info(f"\nKillerKoala: {response}\n")
     
     def run_nfc_emulator(self):
@@ -194,7 +194,7 @@ class KoalaByteDevice:
         logger.info("Cloning tag...")
         logger.info("Clone successful. Emulation active.")
         
-        xp, response = self.kora.report_action("nfc_clone")
+        xp, response = self.KillerKoala.report_action("nfc_clone")
         logger.info(f"\nKillerKoala: {response}\n")
     
     def run_attack_mode(self):

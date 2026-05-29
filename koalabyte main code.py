@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+no#!/usr/bin/env python3
 """KoalaByte Firmware Main Entry Point
 
 Orchestrates hardware initialization, KillerKoala AI companion,
@@ -160,7 +160,7 @@ class KoalaByteDevice:
         logger.info("    * HomeWiFi (WPA2)")
         logger.info("    * CoffeeShop-5G (WPA3)")
         
-        xp, response = self.kora.report_action("wifi_scan")
+        xp, response = self.KillerKoala.report_action("wifi_scan")
         logger.info(f"\nKillerKoala: {response}\n")
     
     def run_ble_discovery(self):
@@ -172,7 +172,7 @@ class KoalaByteDevice:
         logger.info("    * Fitbit Charge 5 (8E92D1)")
         logger.info("    * Unknown Device (5C3B9F)")
         
-        xp, response = self.kora.report_action("ble_discovery")
+        xp, response = self.KillerKoala.report_action("ble_discovery")
         logger.info(f"\nKillerKoala: {response}\n")
     
     def run_ir_transceiver(self):

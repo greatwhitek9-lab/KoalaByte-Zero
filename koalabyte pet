@@ -295,7 +295,7 @@ class KillerKoalaCompanion:
         }
     
     def save_state(self, filepath: str):
-        """Save KORA's state to a JSON file"""
+        """Save KillerKoala's state to a JSON file"""
         state = {
             "stats": asdict(self.stats),
             "saved_at": datetime.now().isoformat(),
@@ -304,7 +304,7 @@ class KillerKoalaCompanion:
             json.dump(state, f, indent=2)
     
     def load_state(self, filepath: str):
-        """Load KORA's state from a JSON file"""
+        """Load KillerKoala's state from a JSON file"""
         try:
             with open(filepath, 'r') as f:
                 state = json.load(f)

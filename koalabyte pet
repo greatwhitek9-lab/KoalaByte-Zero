@@ -87,7 +87,7 @@ class KillerKoalaCompanion:
         self._init_dialogue_banks()
     
     def _init_dialogue_banks(self):
-        """Initialize KORA's dialogue responses"""
+        """Initialize KillerKoala's dialogue responses"""
         self.dialogue = {
             "idle": self.config.DIALOGUE_IDLE,
             "wifi_scan": self.config.DIALOGUE_WIFI_SCAN,

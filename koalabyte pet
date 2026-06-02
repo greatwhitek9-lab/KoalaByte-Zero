@@ -214,7 +214,7 @@ class KillerKoalaCompanion:
         tier = self.stats.personality_tier.value
         
         tier_responses = {
-            "kid": [
+            "noob": [
                 "Whoa! That was cool!",
                 "What does this button do?",
                 "Can we try that again?",

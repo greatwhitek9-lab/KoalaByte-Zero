@@ -29,7 +29,7 @@ class Mood(Enum):
 
 class PersonalityTier(Enum):
     """KillerKoala's evolution stages"""
-    KID = "kid"
+    NOOB = "noob"
     HACKER = "hacker"
     ELITE = "elite"
     LEGEND = "legend"
@@ -52,12 +52,12 @@ class CyberpetStats:
     adaptation: int = 0
     
     # Action counters
-    wifi_scans: int = 0
-    ble_discoveries: int = 0
-    ir_transmissions: int = 0
-    nfc_clones: int = 0
-    exploits_executed: int = 0
-    total_actions: int = 0
+    wifi_scans: int = 1
+    ble_discoveries: int = 1
+    ir_transmissions: int = 0.5
+    nfc_clones: int = 5
+    exploits_executed: int = 5
+    total_actions: int = 12.5
     
     # Timestamps
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())

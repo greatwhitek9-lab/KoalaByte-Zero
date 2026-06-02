@@ -248,7 +248,7 @@ class KillerKoalaCompanion:
         return random.choice(self.config.DIALOGUE_LOW_BATTERY)
     
     def update_mood(self, delta_time: float):
-        """Update KORA's mood based on time"""
+        """Update KillerKoala's mood based on time"""
         self._mood_timer -= delta_time
         
         if self._mood_timer <= 0:

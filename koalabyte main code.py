@@ -122,12 +122,42 @@ class KoalaByteDevice:
         logger.info("  - NFC/RFID module initialized")
 
     def _final_system_check(self):
-        """Final pre-operation system check"""
-        logger.info("  - CPU: 23% utilization")
-        logger.info("  - RAM: 2.1GB / 8GB")
-        logger.info("  - Storage: 12.3GB / 64GB")
-        logger.info("  - Battery: 95% charged")
-        logger.info("  - Temperature: 45C (nominal)")
+        """Final pre-operation system check with dynamic data"""
+        import psutil  # Ensure psutil is installed in your Python environment.
+
+        # Fetch CPU usage
+        cpu_usage = psutil.cpu_percent(interval=1)
+
+        # Fetch RAM usage
+        ram = psutil.virtual_memory()
+        ram_used = ram.used / (1024 ** 3)  # Convert bytes to GB
+        ram_total = ram.total / (1024 ** 3)  # Convert bytes to GB
+
+        # Fetch Storage info
+        disk = psutil.disk_usage('/')
+        disk_used = disk.used / (1024 ** 3)  # Convert bytes to GB
+        disk_total = disk.total / (1024 ** 3)  # Convert bytes to GB
+
+        # Fetch Battery info (if on a device with a battery)
+        battery = psutil.sensors_battery()
+        if battery:
+            battery_percent = battery.percent
+        else:
+            battery_percent = "N/A"
+
+        # Fetch Temperature data (if available on the system)
+        try:
+            temperatures = psutil.sensors_temperatures()
+            temp_celsius = temperatures['coretemp'][0].current if 'coretemp' in temperatures else "N/A"
+        except AttributeError:
+            temp_celsius = "N/A"  # Sensors may not be supported on all systems
+
+        # Log all the details dynamically
+        logger.info("  - CPU: {:.2f}% utilization".format(cpu_usage))
+        logger.info("  - RAM: {:.2f}GB / {:.2f}GB".format(ram_used, ram_total))
+        logger.info("  - Storage: {:.2f}GB / {:.2f}GB".format(disk_used, disk_total))
+        logger.info("  - Battery: {}% charged".format(battery_percent))
+        logger.info("  - Temperature: {}C (nominal)".format(temp_celsius))
         logger.info("  - All security flags cleared")
 
     def menu_main(self) -> str:

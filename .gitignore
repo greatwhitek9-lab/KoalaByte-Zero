@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+Pipfile.lock
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Backup files
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# KiCAD
+*.kicad_sch-bak
+*.kicad_pcb-bak
+*-cache.lib
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+
+# Device data
+*.pcap
+*.capture
+device_state.json
+
+# Additional
+node_modules/

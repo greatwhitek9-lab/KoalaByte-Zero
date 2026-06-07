@@ -1,1 +1,10 @@
-sudo python firmware/main.py
+# Run the firmware script for KoalaByte
+# Step 1: Ensure you are in the project root directory
+cd /path/to/project
+
+# Step 2: Run the firmware (use python3 explicitly)
+python3 firmware/main.py
+
+# Note: If administrative privileges are required due to hardware access or special permissions,
+# you can run:
+sudo python3 firmware/main.py

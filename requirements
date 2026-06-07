@@ -1,10 +1,9 @@
 # Core Dependencies
-scapy==2.5.0
+scapy==2.5.1
 pwntools==4.10.1
 paramiko==3.3.1
 nfcpy==1.0.4
-py-lirc==0.2.2
-numpy==1.24.3
+numpy==1.25.1
 pandas==2.0.3
 
 # WiFi/BLE

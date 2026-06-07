@@ -1,0 +1,3 @@
+jetson_release || echo "Error: Jetson release information unavailable"
+nvcc --version || echo "Error: CUDA Toolkit not detected"
+cuda-smi || echo "Error: CUDA drivers not working"

@@ -1,0 +1,25 @@
+#!/bin/bash
+# Script to upload firmware to ESP32 using PlatformIO
+
+# Navigate to the control firmware directory
+cd esp32_mcu/control_firmware || {
+  echo "Error: Directory 'esp32_mcu/control_firmware' not found."
+  exit 1
+}
+
+# Define the USB port dynamically or use a default value
+USB_PORT=${1:-/dev/ttyUSB0}
+
+# Check if the USB port exists
+if [ ! -e "$USB_PORT" ]; then
+  echo "Error: USB port '$USB_PORT' not found. Please check the connection."
+  exit 1
+fi
+
+# Run the PlatformIO upload command
+platformio run --target upload --upload-port "$USB_PORT" || {
+  echo "Error: PlatformIO upload failed."
+  exit 1
+}
+
+echo "Firmware upload completed successfully!"

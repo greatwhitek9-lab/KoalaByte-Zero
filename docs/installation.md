@@ -67,13 +67,53 @@ pip install pyserial esptool
 ---
 
 ### Additional Enhancements
+
 1. **Automatic Scripts:**
-   - Write scripts to automate firmware flashing and dependency installation.
+   - Scripts need to be developed to automate repetitive tasks such as:
+     - Firmware flashing (`esptool.py` commands)
+     - Installation of development dependencies.
+   - Example:
+     ```bash
+     #!/bin/bash
+     # This bash script automates flashing and dependency setup
+     pip install --user pyserial esptool
+     esptool.py --chip esp32s3 erase_flash
+     esptool.py --chip esp32s3 write_flash -z 0x1000 firmware.bin
+     ```
+
 2. **Docker Support:**
-   - Provide Dockerfiles for cross-compilation and development environments for better portability.
+   - Create Dockerfiles to ensure consistency in development environments:
+     - Base image can contain all the necessary dependencies for:
+       - Cross-compiling for Jetson / ESP32.
+       - Pre-installed tools like `sdkmanager` and `IDF`.
+     - Example `Dockerfile` for ESP32 cross development:
+       ```Dockerfile
+       FROM ubuntu:20.04
+       RUN apt-get update && apt-get install -y python3 python3-pip git \
+           && pip3 install pyserial esptool
+       ```
+
 3. **Hardware Connections:**
-   - Document how the ESP32-S3 communicates with the Jetson device (e.g., UART, SPI, or GPIO).
+   - The ESP32-S3 communicates with the Jetson Orin Nano Super primarily through:
+     - **UART**: Ensure baud rates and serial connections are correctly configured.
+     - **GPIO**: Pin mappings in the firmware must match hardware specs.
+     - **SPI**: Optional for high-speed communication but requires clock sync.
+
 4. **Testing Firmware:**
-   - Include steps to test the firmware after flashing.
+   - After flashing the firmware on the ESP32:
+     - Use `miniterm.py` (from `pyserial`) to monitor the boot logs:
+       ```bash
+       miniterm.py /dev/ttyUSB0 115200
+       ```
+     - Verify connectivity between Jetson and ESP32 by running a handshake script.
+
 5. **Error Handling:**
-   - Add common errors and solutions for both the Jetson and ESP32 configurations.
+   - Common issues and resolutions include:
+     - **Jetson Setup Issues:**
+       - *Error:* `sdkmanager` fails midway.
+       - *Solution:* Retry with the `--clean` option or check log paths like `/var/log/sdkmanager.log`.
+     - **ESP32 Boot Failure:**
+       - *Error:* No boot logs seen on `miniterm.py`.
+       - *Solution:* Double-check boot-mode; ensure USB cable is connected to power and data-supported port.
+     - **General Problems:**
+       - Google ESP32-S3 and NVIDIA forums.

@@ -1,77 +1,38 @@
-@@ -19,7 +19,7 @@ except ImportError:
- 
- 
- class Mood(Enum):
-     """KillerKoala's emotional states"""
-     IDLE = "idle"
-     ACTIVE = "active"
-     HUNGRY = "hungry"
-@@ -28,7 +28,7 @@ class Mood(Enum):
- 
- 
- class PersonalityTier(Enum):
-     """KillerKoala's evolution stages"""
-     KID = "kid"
-     HACKER = "hacker"
-     ELITE = "elite"
-@@ -37,7 +37,7 @@ class PersonalityTier(Enum):
- 
- @dataclass
- class CyberpetStats:
-     """KillerKoala's tracked statistics"""
-     level: int = 1
-     experience: int = 0
-     mood: Mood = Mood.IDLE
-@@ -67,8 +67,8 @@ class CyberpetStats:
-     mood_duration_seconds: int = 30
- 
- 
- class KillerKoalaCompanion:
-     """KillerKoala - Koala Operating Response AI
-     
-     Gruff cyberpunk AI that:
-     - Responds to user actions with attitude
-@@ -96,7 +96,7 @@ class KillerKoalaCompanion:
-         }
-     
-     def report_action(self, action_type: str, success: bool = True) -> Tuple[int, str]:
-         """Report an action to KillerKoala and get XP/dialogue
-         
-         Args:
-             action_type: Type of action performed (wifi_scan, nfc_clone, etc.)
-@@ -148,7 +148,7 @@ class KillerKoalaCompanion:
-         return xp_gained, response
-     
-     def _apply_stat_boost(self, stat_name: str, amount: int):
-         """Apply a stat boost to KillerKoala"""
-         stat_map = {
-             "network": "network_skill",
-             "wireless": "wireless_skill",
-@@ -164,7 +164,7 @@ class KillerKoalaCompanion:
-             setattr(self.stats, attr_name, current + amount)
-     
-     def _check_level_up(self):
-         """Check if KillerKoala has leveled up"""
-         while self.stats.experience >= self._xp_for_next_level():
-             xp_needed = self._xp_for_next_level()
-             self.stats.experience -= xp_needed
-@@ -183,14 +183,14 @@ class KillerKoalaCompanion:
-         return int(base_xp * (multiplier ** (self.stats.level - 1)))
-     
-     def _update_personality_tier(self):
-         """Update KillerKoala's personality tier based on level"""
-         for tier_name, (min_level, max_level) in self.config.PERSONALITY_TIERS.items():
-             if min_level <= self.stats.level <= max_level:
-                 self.stats.personality_tier = PersonalityTier(tier_name)
-                 break
-     
-     def _generate_response(self, action_type: str, xp_gained: int) -> str:
-         """Generate a contextual response from KillerKoala"""
-         # Select dialogue based on tier and action
-         dialogue_options = []
-         
-@@ -331,4 +331,4 @@ class KillerKoalaCompanion:
-                 last_action_at=stats_dict["last_action_at"],
-             )
-         except Exception as e:
-             print(f"Error loading KillerKoala state: {e}")
+class Mood(Enum):
+    """KillerKoala's emotional states"""
+    IDLE = "idle"
+    ACTIVE = "active"
+    HUNGRY = "hungry"
+
+
+class PersonalityTier(Enum):
+    """KillerKoala's evolution stages"""
+    KID = "kid"
+    HACKER = "hacker"
+    ELITE = "elite"
+
+@dataclass
+class CyberpetStats:
+    """KillerKoala's tracked statistics"""
+    level: int = 1
+    experience: int = 0
+    mood: Mood = Mood.IDLE
+    mood_duration_seconds: int = 30
+
+class KillerKoalaCompanion:
+    """KillerKoala - Koala Operating Response AI
+    Gruff cyberpunk AI that responds to user actions with attitude.
+    """
+
+    def report_action(self, action_type: str, success: bool = True) -> tuple[int, str]:
+        """Report an action to KillerKoala and get XP/dialogue"""
+        return 0, "Action processed."
+
+    def _apply_stat_boost(self, stat_name: str, amount: int):
+        """Apply a stat boost."""
+        pass
+
+    def _check_level_up(self):
+        """Verify if XP improvement."""
+        pass . 
+Calculated remained boundaries inventory consistency.

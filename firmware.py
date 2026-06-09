@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
-"""KoalaByte v2.7 Main Firmware Entry Point (fixed)
+"""KoalaByte v2.7 Main Firmware Entry Point (with splash screen)
 
-This update fixes several issues:
-- Implements _load_bom_components so components are available.
-- Replaces an undefined main() call with a proper main() function.
-- Provides a minimal interactive_menu implementation.
-- Improves import error messaging and keeps behavior safe for lab mode.
+This update adds a splash/boot screen shown at startup before the interactive menu
+or main UI is presented. The splash image is loaded from ./assets/koalabyte_logo.png if present;
+otherwise a cyberpunk koala logo is generated at runtime using Pillow and saved to assets/koalabyte_logo.png.
+
+The display implementation uses pygame when available; it falls back to logging if the
+environment is headless or pygame is not installed.
 """
 from __future__ import annotations
 
 import logging
 import os
-import subprocess
 import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, Optional
+
+# Optional UI/image libs
+try:
+    import pygame
+    from PIL import Image, ImageDraw, ImageFont, ImageFilter
+    PYGAME_AVAILABLE = True
+except Exception:
+    PYGAME_AVAILABLE = False
 
 # Improved exception handling for dependency imports
 try:
@@ -31,7 +39,6 @@ try:
 except ImportError as e:
     # If cyberpet_ai is not present, provide a lightweight stub so firmware can run safely.
     try:
-        # Attempt to import an optional local stub
         from . import cyberpet_ai  # type: ignore
     except Exception:
         class KillerKoalaCompanion:  # minimal stub
@@ -55,6 +62,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("koalabyte.v2_7")
 
+ASSETS_DIR = Path("assets")
+ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+KOALA_LOGO_PATH = ASSETS_DIR / "koalabyte_logo.png"
+
 @dataclass(frozen=True)
 class HardwareComponent:
     """BOM-backed hardware component metadata."""
@@ -70,6 +81,162 @@ class HardwareComponent:
     def describe(self) -> str:
         return f"{self.ref}: {self.name} | {self.mpn_or_module} | {self.interface}"
 
+
+class SplashScreen:
+    """Simple splash screen handler using pygame + Pillow.
+
+    If pygame is unavailable or the environment is headless, this is a no-op that logs instead.
+    The default generated logo is a cyberpunk angry koala face with neon green and purple eyes on a black background.
+    """
+
+    def __init__(self, width: int, height: int, splash_path: Optional[Path] = None):
+        self.width = width
+        self.height = height
+        self.splash_path = splash_path or KOALA_LOGO_PATH
+
+    def _generate_cyberpunk_koala(self) -> Image.Image:
+        # Create a black background
+        img = Image.new("RGBA", (self.width, self.height), (0, 0, 0, 255))
+        draw = ImageDraw.Draw(img)
+
+        cx = self.width // 2
+        cy = self.height // 2
+        face_radius = min(self.width, self.height) // 3
+
+        # Draw face base (dark gray)
+        face_bbox = [cx - face_radius, cy - face_radius, cx + face_radius, cy + face_radius]
+        draw.ellipse(face_bbox, fill=(30, 30, 30, 255))
+
+        # Ears
+        ear_radius = face_radius // 1.6
+        left_ear = [cx - face_radius - ear_radius // 2, cy - face_radius, cx - face_radius + ear_radius, cy - face_radius + ear_radius]
+        right_ear = [cx + face_radius - ear_radius, cy - face_radius, cx + face_radius + ear_radius // 2, cy - face_radius + ear_radius]
+        draw.ellipse(left_ear, fill=(28, 28, 28, 255))
+        draw.ellipse(right_ear, fill=(28, 28, 28, 255))
+
+        # Snout
+        snout_w = face_radius
+        snout_h = face_radius // 1.4
+        snout_bbox = [cx - snout_w // 2, cy + face_radius // 8, cx + snout_w // 2, cy + face_radius // 2]
+        draw.ellipse(snout_bbox, fill=(60, 60, 60, 255))
+
+        # Nose
+        nose_w = snout_w // 3
+        nose_h = snout_h // 3
+        nose_bbox = [cx - nose_w // 2, cy + face_radius // 8 + nose_h // 4, cx + nose_w // 2, cy + face_radius // 8 + nose_h]
+        draw.ellipse(nose_bbox, fill=(10, 10, 10, 255))
+
+        # Angry brows (sharp triangles)
+        brow_offset_x = face_radius // 2
+        brow_offset_y = face_radius // 2
+        # Left brow
+        lb = [(cx - brow_offset_x, cy - brow_offset_y // 2), (cx - brow_offset_x // 4, cy - brow_offset_y), (cx - brow_offset_x // 4 + 10, cy - brow_offset_y // 2)]
+        rb = [(cx + brow_offset_x, cy - brow_offset_y // 2), (cx + brow_offset_x // 4, cy - brow_offset_y), (cx + brow_offset_x // 4 - 10, cy - brow_offset_y // 2)]
+        draw.polygon(lb, fill=(20, 20, 20))
+        draw.polygon(rb, fill=(20, 20, 20))
+
+        # Eyes: neon green (left) and neon purple (right)
+        eye_w = face_radius // 3
+        eye_h = face_radius // 4
+        left_eye_center = (cx - face_radius // 2, cy - face_radius // 8)
+        right_eye_center = (cx + face_radius // 2, cy - face_radius // 8)
+
+        # helper to draw glowing eye
+        def draw_glowing_eye(center, color):
+            lx, ly = center
+            glow = Image.new("RGBA", (self.width, self.height), (0, 0, 0, 0))
+            gdraw = ImageDraw.Draw(glow)
+            max_r = eye_w
+            for i in range(max_r, 0, -6):
+                alpha = int(25 * (1 + (max_r - i) / max_r))
+                r = int((i / max_r) * 1.0 * eye_w)
+                gdraw.ellipse([lx - r, ly - r, lx + r, ly + r], fill=(color[0], color[1], color[2], alpha))
+            # central pupil/iris
+            gdraw.ellipse([lx - eye_w // 2, ly - eye_h // 2, lx + eye_w // 2, ly + eye_h // 2], fill=(255, 255, 255, 255))
+            blurred = glow.filter(ImageFilter.GaussianBlur(radius=4))
+            img.alpha_composite(blurred)
+
+        draw_glowing_eye(left_eye_center, (0, 255, 100))   # neon green
+        draw_glowing_eye(right_eye_center, (180, 0, 255))  # neon purple
+
+        # Add subtle outline glow to face
+        outline = Image.new("RGBA", (self.width, self.height), (0, 0, 0, 0))
+        odraw = ImageDraw.Draw(outline)
+        odraw.ellipse([face_bbox[0]-6, face_bbox[1]-6, face_bbox[2]+6, face_bbox[3]+6], outline=(50, 0, 80, 120), width=8)
+        img = Image.alpha_composite(img, outline)
+
+        # Optional watermark text at bottom
+        try:
+            font = ImageFont.load_default()
+            text = "KoalaByte"
+            tw, th = draw.textsize(text, font=font)
+            draw.text((self.width - tw - 8, self.height - th - 8), text, fill=(120, 120, 120), font=font)
+        except Exception:
+            pass
+
+        return img
+
+    def show(self, duration: float = 2.0) -> None:
+        logger.info("Showing splash screen (duration=%.1fs)", duration)
+        if not PYGAME_AVAILABLE:
+            # If Pillow available, still generate and save the image for boards that read assets
+            if 'Image' in globals():
+                try:
+                    if not self.splash_path.exists():
+                        img = self._generate_cyberpunk_koala()
+                        img.save(self.splash_path)
+                        logger.info("Generated koalabyte logo at %s", self.splash_path)
+                except Exception:
+                    logger.debug("Could not generate or save splash image", exc_info=True)
+            time.sleep(duration)
+            return
+
+        # Ensure pygame is initialized on a display-capable system
+        try:
+            os.environ.setdefault("SDL_VIDEODRIVER", os.environ.get("SDL_VIDEODRIVER", "x11"))
+            pygame.init()
+            screen = pygame.display.set_mode((self.width, self.height))
+            pygame.display.set_caption("KoalaByte")
+
+            # Load logo image or generate one
+            if self.splash_path.exists():
+                img = Image.open(self.splash_path).convert("RGBA")
+                img = img.resize((self.width, self.height), Image.LANCZOS)
+            else:
+                img = self._generate_cyberpunk_koala()
+                try:
+                    img.save(self.splash_path)
+                    logger.info("Saved generated koalabyte logo to %s", self.splash_path)
+                except Exception:
+                    logger.debug("Could not save generated logo", exc_info=True)
+
+            # Convert PIL image to pygame surface
+            mode = img.mode
+            size = img.size
+            data = img.tobytes()
+            pygame_image = pygame.image.fromstring(data, size, mode)
+
+            clock = pygame.time.Clock()
+            start = time.time()
+            running = True
+            while running and (time.time() - start) < duration:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                screen.blit(pygame.transform.scale(pygame_image, (self.width, self.height)), (0, 0))
+                pygame.display.flip()
+                clock.tick(30)
+
+        except Exception as exc:
+            logger.warning("Splash display failed: %s", exc)
+            time.sleep(duration)
+        finally:
+            try:
+                pygame.quit()
+            except Exception:
+                pass
+
+
 class Display:
     """DS1: Generic 3.5 inch HDMI LCD, 5V, Jetson-driven display."""
 
@@ -80,9 +247,9 @@ class Display:
         self.initialized = False
 
     def initialize(self) -> None:
-        # HDMI display is Jetson-driven; real validation is handled by X/Wayland/DRM stack.
         logger.info("Display initialized: %s (%sx%s target)", self.component.describe(), self.width, self.height)
         self.initialized = True
+
 
 class Camera:
     """CAM1: (IMX708 CSI camera module)"""
@@ -93,9 +260,9 @@ class Camera:
         self.initialized = False
 
     def initialize(self) -> None:
-        # Production implementation should validate with libcamera, v4l2-ctl, or GStreamer.
         logger.info("Camera initialized: %s on CSI-%s", self.component.describe(), self.csi_id)
         self.initialized = True
+
 
 class LedRing:
     """WS2812-compatible 16-LED eye ring."""
@@ -114,6 +281,7 @@ class LedRing:
             self.color_profile,
         )
         self.initialized = True
+
 
 class BatterySystem:
     """2S2P 21700 Li-ion pack battery system."""
@@ -177,7 +345,6 @@ class BatterySystem:
     def estimate_state_of_charge(self, voltage: Optional[float]) -> Optional[int]:
         if voltage is None:
             return None
-        # Conservative linear approximation for a 2S Li-ion pack.
         denom = (self.PACK_FULL_V - self.PACK_CRITICAL_V)
         if denom == 0:
             return None
@@ -212,6 +379,7 @@ class BatterySystem:
             self.safety_state(),
         )
 
+
 class WirelessModule:
     """Wireless/peripheral module wrapper."""
 
@@ -222,6 +390,7 @@ class WirelessModule:
     def initialize(self) -> None:
         logger.info("Module initialized: %s", self.component.describe())
         self.initialized = True
+
 
 class SafetyInterlock:
     """Runtime gate for lab-only functions."""
@@ -240,6 +409,7 @@ class SafetyInterlock:
                 logger.warning("Blocked: lab-only mode has not been acknowledged.")
                 return False
         return True
+
 
 class KoalaByteDevice:
     """Main firmware orchestrator for KoalaByte v2.7."""
@@ -292,7 +462,6 @@ class KoalaByteDevice:
 
     def _load_bom_components(self) -> Dict[str, HardwareComponent]:
         """BOM component map aligned to KoalaByte v2.7 w/batt."""
-        # Return a complete mapping of components referenced by the orchestrator.
         return {
             "DS1": HardwareComponent("DS1", "3.5 inch HDMI Display", "Generic", "HDMI LCD", "HDMI", "Panel Mount"),
             "CAM1": HardwareComponent("CAM1", "IMX708 CSI Camera", "Arducam", "IMX708", "CSI", "Board Mount"),
@@ -314,11 +483,18 @@ class KoalaByteDevice:
         }
 
     def boot_sequence(self) -> None:
-        """Execute device boot sequence."""
+        """Execute device boot sequence and show splash screen before initialization."""
         logger.info("=" * 60)
         logger.info("KoalaByte v%s - BOOT SEQUENCE", self.VERSION)
         logger.info("Time: %s", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         logger.info("=" * 60)
+
+        # Show splash screen first (best-effort)
+        splash = SplashScreen(width=self.display.width, height=self.display.height)
+        try:
+            splash.show(duration=2.0)
+        except Exception:
+            logger.debug("Splash display failed or was skipped", exc_info=True)
 
         steps = [
             ("Initialize display", self.display.initialize),
@@ -355,17 +531,22 @@ class KoalaByteDevice:
             print("\nKoalaByte Interactive Menu")
             print("1) Show battery status")
             print("2) Acknowledge lab mode")
-            print("3) Exit")
+            print("3) Show splash")
+            print("4) Exit")
             choice = input("Select: ").strip()
             if choice == "1":
                 self.battery.log_status()
             elif choice == "2":
                 self.safety.acknowledge_lab_mode()
             elif choice == "3":
+                splash = SplashScreen(width=self.display.width, height=self.display.height)
+                splash.show(duration=2.0)
+            elif choice == "4":
                 print("Exiting interactive menu.")
                 break
             else:
                 print("Unknown option")
+
 
 def main() -> int:
     device = KoalaByteDevice()

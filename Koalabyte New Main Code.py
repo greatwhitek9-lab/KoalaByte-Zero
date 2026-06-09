@@ -49,6 +49,19 @@ class HardwareComponent:
     def describe(self) -> str:
         return f"{self.ref}: {self.name} ({self.manufacturer}) | {self.mpn_or_module} | {self.interface}"
 
+class InfraredSystem:
+    def __init__(self, receiver: HardwareComponent, transmitter: HardwareComponent, driver: HardwareComponent):
+        self.receiver = receiver
+        self.transmitter = transmitter
+        self.driver = driver
+        self.initialized = False
+
+    def initialize(self):
+        logger.info(f"Initializing IR Receiver: {self.receiver.describe()}")
+        logger.info(f"Initializing IR Transmitter: {self.transmitter.describe()}")
+        logger.info(f"Initializing Driver: {self.driver.describe()}")
+        self.initialized = True
+
 class Display:
     def __init__(self, component: HardwareComponent, width: int = 800, height: int = 480):
         self.component = component
@@ -164,6 +177,12 @@ class KoalaDevice:
             self.left_eye = LedRing(self.components['LED_L'], "purple")
             self.right_eye = LedRing(self.components['LED_R'], "green")
 
+            self.ir_system = InfraredSystem(
+                receiver=self.components['IR_RX1'],
+                transmitter=self.components['IR_TX1'],
+                driver=self.components['Q_IR1']
+            )
+
             self.battery = BatterySystem(self.components['BAT1'], voltage_reader=None)
 
             self.esp32s3 = WirelessModule(self.components['U2'])
@@ -183,8 +202,13 @@ class KoalaDevice:
             "DS1": HardwareComponent("DS1", "Display", "Generic", "3.5"),
             "CAM1": HardwareComponent("CAM1", "IMX219 Camera", "Sony", "MIPI-CSI"),
             "LED_L": HardwareComponent("LED_L", "Left LED", "WS2812B", ""),
+            "IR_RX1": HardwareComponent("IR_RX1", "Infrared Receiver", "Vishay", "TSOP38238"),
+            "IR_TX1": HardwareComponent("IR_TX1", "Infrared Transmitter", "Vishay", "TSAL6200"),
+            "Q_IR1": HardwareComponent("Q_IR1", "MOSFET Driver", "ON Semiconductor", "2N7002"),
         }
 
 if __name__ == "__main__":
     device = KoalaDevice()
+    logger.info("Running device...")
+    device.ir_system.initialize()
     device.run()

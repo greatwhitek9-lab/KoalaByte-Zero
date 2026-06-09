@@ -2,7 +2,7 @@ Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
 U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
 DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
 U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/LED/safety interlock
-CAM1	1	Raspberry Pi/Arducam	IMX219 CSI camera module	Camera board mount + FFC clearance	Hand/install	Right-eye camera
+CAM1	1	Arducam	IMX708 CSI camera module	Camera board mount + FFC clearance	Hand/install	Right-eye camera (Updated)
 LED_L	1	WS2812-compatible	16 LED RGB ring purple setting	Ring mount + JST/GH	Hand/install	Left eye ultraviolet/purple animation
 LED_R	1	WS2812-compatible	16 LED RGB ring green setting	Ring mount + JST/GH	Hand/install	Right eye cyber green animation
 U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use

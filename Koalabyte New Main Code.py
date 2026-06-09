@@ -41,20 +41,46 @@ class HardwareComponent:
     ref: str
     name: str
     manufacturer: str
-    interface: str
+    mpn_or_module: str = ""
+    interface: str = ""
+    mount: str = ""
     notes: str = ""
 
     def describe(self) -> str:
-        return f"{self.ref}: {self.name} ({self.manufacturer}) via {self.interface}"
+        return f"{self.ref}: {self.name} ({self.manufacturer}) | {self.mpn_or_module} | {self.interface}"
 
 class Display:
     def __init__(self, component: HardwareComponent, width: int = 800, height: int = 480):
         self.component = component
         self.width = width
         self.height = height
+        self.initialized = False
 
     def initialize(self) -> None:
         logger.info(f"Display [{self.component.describe()}] initialized ({self.width}x{self.height}).")
+        self.initialized = True
+
+class Camera:
+    def __init__(self, component: HardwareComponent, csi_id: int = 0):
+        self.component = component
+        self.csi_id = csi_id
+        self.initialized = False
+
+    def initialize(self) -> None:
+        logger.info(f"Camera [{self.component.describe()}] initialized on CSI-{self.csi_id}.")
+        self.initialized = True
+
+class LedRing:
+    def __init__(self, component: HardwareComponent, color_profile: str, led_count: int = 16):
+        self.component = component
+        self.color_profile = color_profile
+        self.led_count = led_count
+        self.initialized = False
+
+    def initialize(self) -> None:
+        logger.info(
+            f"LED ring [{self.component.describe()}] initialized | count={self.led_count} | profile={self.color_profile}")
+        self.initialized = True
 
 class BatterySystem:
     def __init__(
@@ -87,6 +113,30 @@ class BatterySystem:
             return "Critical Voltage"
         return "Voltage Normal"
 
+class WirelessModule:
+    def __init__(self, component: HardwareComponent):
+        self.component = component
+        self.initialized = False
+
+    def initialize(self) -> None:
+        logger.info(f"Wireless Module [{self.component.describe()}] initialized.")
+        self.initialized = True
+
+class SafetyInterlock:
+    def __init__(self, security_config):
+        self.security_config = security_config
+        self.lab_mode_acknowledged = False
+
+    def acknowledge_lab_mode(self) -> None:
+        logger.warning("Lab-only mode acknowledged.")
+        self.lab_mode_acknowledged = True
+
+    def require_lab_mode(self) -> bool:
+        if not self.lab_mode_acknowledged:
+            logger.warning("Operation blocked: lab-only mode not acknowledged.")
+            return False
+        return True
+
 class KillerKoala:
     def __init__(self, companion: KillerKoalaCompanion):
         self.companion = companion
@@ -100,55 +150,40 @@ class KillerKoala:
             logger.error("KillerKoala initialization failed: %s", e, exc_info=True)
 
 class KoalaDevice:
-    VERSION = "v2.7 Unified"
+    VERSION = "2.7 Unified"
 
     def __init__(self):
         try:
-            logger.info("Starting unified KoalaByte firmware...")
+            logger.info("Initializing KoalaByte firmware...")
+
             self.hw_config = get_hardware_config()
-            self.components: Dict[str, HardwareComponent] = self.load_components()
-            self.display = Display(self.components['Display'])
-            self.battery = BatterySystem(self.components['Battery'])
+            self.components: Dict[str, HardwareComponent] = self._load_bom_components()
+
+            self.display = Display(self.components['DS1'])
+            self.camera = Camera(self.components['CAM1'])
+            self.left_eye = LedRing(self.components['LED_L'], "purple")
+            self.right_eye = LedRing(self.components['LED_R'], "green")
+
+            self.battery = BatterySystem(self.components['BAT1'], voltage_reader=None)
+
+            self.esp32s3 = WirelessModule(self.components['U2'])
+            self.wifi_bt = WirelessModule(self.components['U_RF1'])
+            self.nfc = WirelessModule(self.components['U_RF2'])
+
             self.killerkoala = KillerKoala(KillerKoalaCompanion(self.hw_config))
+            self.safety = SafetyInterlock(get_security_config())
+
             logger.info("KoalaDevice initialized successfully.")
         except Exception as e:
-            logger.error("Initialization failed!", exc_info=True)
+            logger.error("Initialization failed: %s", e, exc_info=True)
             sys.exit(1)
 
-    def load_components(self):
+    def _load_bom_components(self):
         return {
-            "Display": HardwareComponent("D1", "Generic HDMI LCD", "HDMI Interface", "Jetson-driven"),
-            "Battery": HardwareComponent("BAT1", "2S2P Li-ion", "Custom Connector", "7.4V Nominal"),
+            "DS1": HardwareComponent("DS1", "Display", "Generic", "3.5"),
+            "CAM1": HardwareComponent("CAM1", "IMX219 Camera", "Sony", "MIPI-CSI"),
+            "LED_L": HardwareComponent("LED_L", "Left LED", "WS2812B", ""),
         }
-
-    def boot_sequence(self):
-        logger.info(f"Executing boot sequence [{self.VERSION}]...")
-        self.display.initialize()
-        self.battery.monitor()
-        self.killerkoala.initialize()
-
-    def run(self):
-        self.boot_sequence()
-        logger.info("Device is ready and operational.")
-
-    def interactive_menu(self):
-        commands = {
-            "1": ("Check Battery", self.battery.monitor),
-            "2": ("Initialize KillerKoala", self.killerkoala.initialize),
-        }
-
-        while True:
-            print("\n==== KoalaByte Menu ====")
-            for key, (desc, _) in commands.items():
-                print(f"[{key}] {desc}")
-            choice = input("Select an option (q to quit): ")
-            if choice.lower() == 'q':
-                break
-            elif choice in commands:
-                _, func = commands[choice]
-                func()
-            else:
-                print("Invalid choice.")
 
 if __name__ == "__main__":
     device = KoalaDevice()

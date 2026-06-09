@@ -1,0 +1,16 @@
+Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
+U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
+DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
+U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/LED/safety interlock
+CAM1	1	Raspberry Pi/Arducam	IMX219 CSI camera module	Camera board mount + FFC clearance	Hand/install	Right-eye camera
+LED_L	1	WS2812-compatible	16 LED RGB ring purple setting	Ring mount + JST/GH	Hand/install	Left eye ultraviolet/purple animation
+LED_R	1	WS2812-compatible	16 LED RGB ring green setting	Ring mount + JST/GH	Hand/install	Right eye cyber green animation
+U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
+U_RF2	1	Elechouse/Generic	PN532 NFC module	Header/castellated module	Hand/install	I2C NFC
+U_RF3	1	Raytac/Adafruit	nRF52840 module	Header/castellated module	Hand/install	BLE coprocessor
+U_RF4	1	Ebyte/Generic	CC1101 module	Header/castellated module	Hand/install	Sub-GHz module; observe local law
+GPS1	1	u-blox/Generic	NEO-M8N GPS module	Module mount/header	Hand/install	UART GPS
+SDR1	1	RTL-SDR	RTL2832U + R820T2 USB SDR	USB module/adapter envelope	Hand/install	USB SDR
+J_USB	1	GCT/Amphenol	USB-C power input 16-pin	USB-C receptacle	SMT	5V input; validate PD/current design
+J_HINGE	2	Molex/Amphenol	30-pin 0.5mm FFC	FFC_30P_0.5mm	SMT	Head/base interconnect
+J_LCD	1	Generic	HDMI/5V display connector or harness	HDMI/FFC clearance	SMT/Hand	Validate selected display cable orientation

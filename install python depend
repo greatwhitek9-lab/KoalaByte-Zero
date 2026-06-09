@@ -29,6 +29,10 @@ sudo apt-get install -y python3-pip python3-dev
    ```bash
    pip install -r requirements.txt
    ```
+3. Install the Arducam library required for the IMX708 camera module:
+   ```bash
+   pip install arducam-py==1.0.3
+   ```
 
 ---
 
@@ -42,6 +46,10 @@ To prevent dependency conflicts, it's recommended to use a virtual environment:
 2. Install the dependencies within the virtual environment:
    ```bash
    pip install -r requirements.txt
+   ```
+3. Install the Arducam library:
+   ```bash
+   pip install arducam-py==1.0.3
    ```
 
 ### Troubleshooting

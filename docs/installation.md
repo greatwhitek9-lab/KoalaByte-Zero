@@ -6,6 +6,7 @@ Ensure you have the following ready:
   - NVIDIA Jetson Orin Nano Super with 8GB RAM
   - ESP32-S3-WROOM MCU module
   - USB-C cable for development
+  - Arducam 12MP IMX708 Jetson-compatible CSI camera module  # Updated
 - **Software:**
   - JetPack 5.1+ OS image
   - Python 3.11 or higher

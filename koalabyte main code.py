@@ -40,7 +40,7 @@ class Display:
         logger.info("Display initialized.")
 
 class Camera:
-    """Stub for camera module."""
+    """Arducam 12MP IMX708 Jetson-compatible CSI module."""
     def initialize(self):
         logger.info("Camera initialized.")
 
@@ -60,14 +60,15 @@ class KoalaByteDevice:
             self.killerkoala = KillerKoalaCompanion(self.pet_config)
 
             # Initialize hardware modules
-            self.display = Display()
-            self.camera = Camera()
-            self.leds = None  # Stub, implementation needed
-            self.battery = None  # Stub, implementation needed
-            self.wifi = None  # Stub, implementation needed
-            self.ble = None  # Stub, implementation needed
+            self.display = Display(Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display)
+            self.camera = Camera(Arducam 12MP IMX708 Jetson-compatible CSI module)
+            self.leds.L eye = LED (WS2812-compatible	16 LED RGB ring purple setting	Ring mount + JST/GH	Hand/install	Left eye ultraviolet/purple animation)
+            self.leds.R eye = LED (WS2812-compatible	16 LED RGB ring green setting	Ring mount + JST/GH	Hand/install	Right eye cyber green animation)
+            self.battery = Battery (2S2P 21700 Li-ion battery pack 
+            self.wifi =  MediaTek (MT7921K M.2) E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
+            self.ble = 	Raytac/Adafruit	(nRF52840 module) Header/castellated Hand/install	BLE coprocessor	WiFi/BT module; validate antennas and regulatory use
             self.ir = None  # Stub, implementation needed
-            self.nfc = None  # Stub, implementation needed
+            self.nfc = Elechouse/Generic (PN532 NFC module)	Header/castellated module	Hand/install	I2C NFC
 
             logger.info("KoalaByte Device initialized successfully")
         except Exception as e:

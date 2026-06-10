@@ -3,15 +3,27 @@
 This script consolidates all hardware initialization, AI companion, and critical modules based on the hardware BOM file.
 
 Added: integration with KillerKoala companion and SafetyInterlock (BOM-aligned).
+
+This version hardens BOM parsing, prefers structured docs/bom.yaml or docs/bom.json, and exposes quantity and footprint fields.
 """
 from __future__ import annotations
 
 import logging
 import sys
+import os
 from pathlib import Path
 from datetime import datetime
 from typing import Callable, Dict, Optional
 from dataclasses import dataclass
+import json
+import csv
+import importlib.util
+
+# Optional YAML support
+try:
+    import yaml  # type: ignore
+except Exception:
+    yaml = None
 
 # Optional runtime config and AI companion imports
 try:
@@ -46,17 +58,19 @@ class HardwareComponent:
     ref: str
     name: str
     manufacturer: str
-    mpn_or_module: str
-    interface: str
-    mount: str
+    mpn_or_module: str = ""
+    interface: str = ""
+    mount: str = ""
+    qty: int = 1
     notes: str = ""
 
     def describe(self) -> str:
         return (
             f"{self.ref}: {self.name} | Manufacturer: {self.manufacturer}, "
-            f"Module/Part: {self.mpn_or_module}, Interface: {self.interface}"
+            f"Module/Part: {self.mpn_or_module}, Interface: {self.interface}, Qty: {self.qty}"
         )
 
+# Subsystem classes (unchanged behavior, improved typing)
 class Display:
     def __init__(self, component: HardwareComponent, width: int = 800, height: int = 480):
         self.component = component
@@ -131,6 +145,35 @@ class BatterySystem:
             logger.warning("Battery voltage read failed: %s", e)
             return None
 
+    def read_temperature_c(self) -> Optional[float]:
+        if self.temp_reader is None:
+            return None
+        try:
+            return float(self.temp_reader())
+        except Exception as e:
+            logger.warning("Battery temperature read failed: %s", e)
+            return None
+
+# Default (simulated) hardware readers — can be overridden by injecting callables
+def _default_voltage_reader() -> float:
+    # Provide an environment override for testing; otherwise return a nominal voltage
+    v = os.environ.get("KOALA_BATT_V")
+    if v:
+        try:
+            return float(v)
+        except Exception:
+            pass
+    return 7.40
+
+def _default_temp_reader() -> float:
+    t = os.environ.get("KOALA_BATT_C")
+    if t:
+        try:
+            return float(t)
+        except Exception:
+            pass
+    return 25.0
+
 class WirelessModule:
     def __init__(self, component: HardwareComponent):
         self.component = component
@@ -158,7 +201,7 @@ class SafetyInterlock:
 
 class KillerKoala:
     """Wrapper to initialize and interact with KillerKoalaCompanion from cyberpet_ai."""
-    def __init__(self, companion: "KillerKoalaCompanion"):
+    def __init__(self, companion: Optional["KillerKoalaCompanion"]):
         self.companion = companion
         self.initialized = False
 
@@ -207,13 +250,24 @@ class KoalaByteDevice:
         self.left_eye = LedRing(self.components['LED_L'], "ultraviolet/purple", 16)
         self.right_eye = LedRing(self.components['LED_R'], "cyber green", 16)
 
+        # Provide hardware readers if available from hw_config (optional); fall back to defaults
+        voltage_reader = None
+        temp_reader = None
+        if getattr(self, 'hw_config', None) is not None:
+            voltage_reader = getattr(self.hw_config, 'voltage_reader', None)
+            temp_reader = getattr(self.hw_config, 'temp_reader', None)
+        voltage_reader = voltage_reader or _default_voltage_reader
+        temp_reader = temp_reader or _default_temp_reader
+
         self.battery = BatterySystem(
             pack=self.components['BAT1'],
             bms=self.components['BMS1'],
             regulator=self.components['REG1'],
             fuse=self.components['F1'],
             thermistor=self.components['TH1'],
-            test_pads=self.components['TP_BAT']
+            test_pads=self.components['TP_BAT'],
+            voltage_reader=voltage_reader,
+            temp_reader=temp_reader,
         )
 
         self.wifi_bt = WirelessModule(self.components['U_RF1'])
@@ -228,7 +282,7 @@ class KoalaByteDevice:
 
         # Initialize KillerKoala companion if available
         companion_instance = None
-        if self.pet_config is not None and KillerKoalaCompanion is not None:
+        if getattr(self, 'pet_config', None) is not None and KillerKoalaCompanion is not None:
             try:
                 companion_instance = KillerKoalaCompanion(self.pet_config)
             except Exception as e:
@@ -241,65 +295,86 @@ class KoalaByteDevice:
         logger.info("KoalaByte Initialization Complete.")
 
     def _load_bom_components(self) -> Dict[str, HardwareComponent]:
-        """Parse docs/BOM and return a mapping of ref -> HardwareComponent.
+        """Attempt to load a structured BOM (YAML/JSON) first, then fall back to parsing docs/BOM TSV.
 
-        Expected BOM format (tab-separated columns):
-        Ref\tQty\tManufacturer/Series\tMPN / Module\tFootprint strategy\tMount\tNotes
+        Returns:
+            Mapping of reference ID to HardwareComponent instances.
         """
-        bom_path = Path(__file__).parent / "docs" / "BOM"
+        repo_root = Path(__file__).parent
+        yaml_path = repo_root / 'docs' / 'bom.yaml'
+        json_path = repo_root / 'docs' / 'bom.json'
+        tsv_path = repo_root / 'docs' / 'BOM'
+
         components: Dict[str, HardwareComponent] = {}
 
-        if not bom_path.exists():
-            logger.warning("BOM file not found at %s; falling back to minimal placeholder components.", bom_path)
-            # Minimal placeholders to avoid KeyError later
-            placeholders = ["DS1", "CAM1", "LED_L", "LED_R", "BAT1", "BMS1", "REG1", "F1", "TH1", "TP_BAT", "U_RF1", "U_RF2", "U_RF3", "U_RF4", "GPS1", "SDR1"]
-            for ref in placeholders:
-                components[ref] = HardwareComponent(ref, ref, "Unknown", "", "", "Unknown")
-            return components
-
-        try:
-            text = bom_path.read_text(encoding="utf-8")
-        except Exception as e:
-            logger.error("Failed to read BOM file: %s", e)
-            return {}
-
-        lines = [ln for ln in text.splitlines() if ln.strip()]
-        # Skip header if present
-        header = lines[0] if lines else ""
-        start_index = 1 if header.lower().startswith("ref") else 0
-
-        for ln in lines[start_index:]:
-            cols = [c.strip() for c in ln.split("\t")]
-            if not cols or len(cols) < 1:
-                continue
-            ref = cols[0]
-            # Derive fields with safe indexing
-            manufacturer = cols[2] if len(cols) > 2 else ""
-            mpn = cols[3] if len(cols) > 3 else ""
-            footprint = cols[4] if len(cols) > 4 else ""
-            mount = cols[5] if len(cols) > 5 else ""
-            notes = cols[6] if len(cols) > 6 else ""
-
-            # Name: prefer MPN/Module column if descriptive, otherwise manufacturer or ref
-            name = mpn or manufacturer or ref
-
+        # Helper to add component safely
+        def _add(ref: str, row: dict):
+            try:
+                qty = int(row.get('qty', row.get('Qty', 1) or 1))
+            except Exception:
+                qty = 1
             components[ref] = HardwareComponent(
                 ref=ref,
-                name=name,
-                manufacturer=manufacturer,
-                mpn_or_module=mpn,
-                interface=footprint,
-                mount=mount,
-                notes=notes,
+                name=row.get('name') or row.get('MPN / Module') or row.get('mpn') or row.get('manufacturer') or ref,
+                manufacturer=row.get('manufacturer') or row.get('Manufacturer/Series') or row.get('Manufacturer') or "",
+                mpn_or_module=row.get('mpn') or row.get('MPN / Module') or "",
+                interface=row.get('interface') or row.get('Footprint strategy') or "",
+                mount=row.get('mount') or row.get('Mount') or "",
+                qty=qty,
+                notes=row.get('notes') or row.get('Notes') or "",
             )
 
-        # Ensure critical keys exist (BOM may omit optional rows); fill placeholders if missing
-        critical = ["DS1", "CAM1", "LED_L", "LED_R", "BAT1", "BMS1", "REG1", "F1", "TH1", "TP_BAT", "U_RF1", "U_RF2", "U_RF3", "U_RF4", "GPS1", "SDR1"]
-        for ref in critical:
-            if ref not in components:
-                components[ref] = HardwareComponent(ref, ref, "Unknown", "", "", "Unknown")
+        # 1) YAML
+        if yaml_path.exists() and yaml is not None:
+            try:
+                data = yaml.safe_load(yaml_path.read_text(encoding='utf-8'))
+                if isinstance(data, list):
+                    for entry in data:
+                        ref = entry.get('ref')
+                        if not ref:
+                            continue
+                        _add(ref, entry)
+                    logger.info('Loaded BOM from YAML: %s', yaml_path)
+                    return components
+            except Exception as e:
+                logger.warning('Failed to parse YAML BOM: %s', e)
 
-        logger.info("Loaded %d components from BOM", len(components))
+        # 2) JSON
+        if json_path.exists():
+            try:
+                raw = json.loads(json_path.read_text(encoding='utf-8'))
+                if isinstance(raw, list):
+                    for entry in raw:
+                        ref = entry.get('ref')
+                        if not ref:
+                            continue
+                        _add(ref, entry)
+                    logger.info('Loaded BOM from JSON: %s', json_path)
+                    return components
+            except Exception as e:
+                logger.warning('Failed to parse JSON BOM: %s', e)
+
+        # 3) TSV/legacy BOM file
+        if tsv_path.exists():
+            try:
+                with tsv_path.open(encoding='utf-8') as fh:
+                    reader = csv.DictReader(fh, delimiter='\t')
+                    for row in reader:
+                        ref = (row.get('Ref') or row.get('ref') or '').strip()
+                        if not ref:
+                            continue
+                        _add(ref, row)
+                logger.info('Loaded BOM from TSV: %s', tsv_path)
+                return components
+            except Exception as e:
+                logger.warning('Failed to parse TSV BOM: %s', e)
+
+        # Fallback: minimal placeholders
+        logger.warning('No structured BOM found; falling back to placeholders')
+        placeholders = ["DS1", "CAM1", "LED_L", "LED_R", "BAT1", "BMS1", "REG1", "F1", "TH1", "TP_BAT", "U_RF1", "U_RF2", "U_RF3", "U_RF4", "GPS1", "SDR1"]
+        for ref in placeholders:
+            components[ref] = HardwareComponent(ref, ref, "Unknown", "", "", 1, "Unknown")
+
         return components
 
     def initialize_subsystems(self):
@@ -323,6 +398,6 @@ class KoalaByteDevice:
             logger.warning("KillerKoala wrapper is not present; skipping companion initialization.")
 
 if __name__ == "__main__":
-    # Instantiate device where BOM will be parsed from docs/BOM
+    # Instantiate device where BOM will be parsed from docs/*
     device = KoalaByteDevice()
     device.initialize_subsystems()

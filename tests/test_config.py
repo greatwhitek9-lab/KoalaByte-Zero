@@ -1,3 +1,7 @@
+from pathlib import Path
+
+import yaml
+
 from koalabyte.config import CONFIG, as_dict
 
 
@@ -9,6 +13,13 @@ def test_display_target_is_hdmi_800x480():
 
 def test_nfc_coil_is_left_ear():
     assert CONFIG.peripherals.nfc_coil_location == "inside left ear"
+
+
+def _structured_bom_refs():
+    bom_path = Path(__file__).resolve().parents[1] / "docs" / "bom.yaml"
+    with bom_path.open("r", encoding="utf-8") as handle:
+        bom = yaml.safe_load(handle)
+    return {item["ref"] for item in bom}
 
 
 def test_power_config_matches_checked_in_bom():
@@ -24,6 +35,19 @@ def test_power_config_matches_checked_in_bom():
     assert CONFIG.power.power_input_ref == "J_USB"
     assert CONFIG.power.fuse_ref == "F1"
     assert "2S pack" in CONFIG.power.regulator_path
+
+
+def test_power_config_refs_resolve_in_structured_bom():
+    bom_refs = _structured_bom_refs()
+    config_refs = {
+        CONFIG.power.battery_ref,
+        CONFIG.power.bms_ref,
+        CONFIG.power.charger_ref,
+        CONFIG.power.regulator_ref,
+        CONFIG.power.power_input_ref,
+        CONFIG.power.fuse_ref,
+    }
+    assert config_refs <= bom_refs
 
 
 def test_config_serializes():

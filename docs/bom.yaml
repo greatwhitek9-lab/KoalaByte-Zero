@@ -1,0 +1,154 @@
+# BOM for Koalabyte firmware (structured)
+# Converted from docs/BOM (tab-separated) into YAML for reliable parsing.
+
+- ref: U1
+  qty: 1
+  manufacturer: NVIDIA
+  mpn: Jetson Orin Nano Super developer/module interface
+  footprint: Carrier/mezzanine or mounting envelope
+  mount: Hand/install
+  notes: Use official NVIDIA carrier pinout and mechanical drawing before order
+
+- ref: DS1
+  qty: 1
+  manufacturer: Generic
+  mpn: 3.5 inch HDMI LCD, 5V
+  footprint: LCD module mounting envelope + HDMI clearance
+  mount: Hand/install
+  notes: Jetson-driven display
+
+- ref: U2
+  qty: 1
+  manufacturer: Espressif
+  mpn: ESP32-S3-WROOM-1-N16R8
+  footprint: ESP32-S3 WROOM module footprint
+  mount: SMT
+  notes: Auxiliary MCU for UI/buttons/LED/safety interlock
+
+- ref: CAM1
+  qty: 1
+  manufacturer: Arducam
+  mpn: IMX708 CSI camera module
+  footprint: Camera board mount + FFC clearance
+  mount: Hand/install
+  notes: Right-eye camera
+
+- ref: LED_L
+  qty: 1
+  manufacturer: WS2812-compatible
+  mpn: 16 LED RGB ring purple setting
+  footprint: Ring mount + JST/GH
+  mount: Hand/install
+  notes: Left eye ultraviolet/purple animation
+
+- ref: LED_R
+  qty: 1
+  manufacturer: WS2812-compatible
+  mpn: 16 LED RGB ring green setting
+  footprint: Ring mount + JST/GH
+  mount: Hand/install
+  notes: Right eye cyber green animation
+
+- ref: U_RF1
+  qty: 1
+  manufacturer: MediaTek
+  mpn: MT7921K M.2 E-Key
+  footprint: M.2 E-Key socket
+  mount: Hand/install
+  notes: WiFi/BT module; validate antennas and regulatory use
+
+- ref: U_RF2
+  qty: 1
+  manufacturer: Elechouse/Generic
+  mpn: PN532 NFC module
+  footprint: Header/castellated module
+  mount: Hand/install
+  notes: I2C NFC
+
+- ref: U_RF3
+  qty: 1
+  manufacturer: Raytac/Adafruit
+  mpn: nRF52840 module
+  footprint: Header/castellated module
+  mount: Hand/install
+  notes: BLE coprocessor
+
+- ref: U_RF4
+  qty: 1
+  manufacturer: Ebyte/Generic
+  mpn: CC1101 module
+  footprint: Header/castellated module
+  mount: Hand/install
+  notes: Sub-GHz module; observe local law
+
+- ref: GPS1
+  qty: 1
+  manufacturer: u-blox/Generic
+  mpn: NEO-M8N GPS module
+  footprint: Module mount/header
+  mount: Hand/install
+  notes: UART GPS
+
+- ref: SDR1
+  qty: 1
+  manufacturer: RTL-SDR
+  mpn: RTL2832U + R820T2 USB SDR
+  footprint: USB module/adapter envelope
+  mount: Hand/install
+  notes: USB SDR
+
+- ref: J_USB
+  qty: 1
+  manufacturer: GCT/Amphenol
+  mpn: USB-C power input 16-pin
+  footprint: USB-C receptacle
+  mount: SMT
+  notes: 5V input; validate PD/current design
+
+- ref: BAT1
+  qty: 1
+  manufacturer: Custom / cell holder assembly
+  mpn: 2S2P 21700 Li-ion pack
+  footprint: Battery bay + keyed high-current connector
+  mount: Hand/install
+  notes: Internal removable/serviceable battery pack
+
+- ref: BMS1
+  qty: 1
+  manufacturer: Generic / Daly / JBD equivalent
+  mpn: 2S Li-ion BMS
+  footprint: BMS module envelope 45x25mm
+  mount: Hand/install
+  notes: Cell balancing, overcharge protection
+
+- ref: REG1
+  qty: 1
+  manufacturer: Pololu / DFRobot / Murata
+  mpn: 5V 12A synchronous buck regulator module
+  footprint: Buck regulator module envelope
+  mount: Hand/install
+  notes: Converts 2S pack to regulated 5V system
+
+- ref: F1
+  qty: 1
+  manufacturer: Littelfuse / Bel
+  mpn: 10A resettable fuse
+  footprint: Fuse footprint/envelope
+  mount: SMT/Hand
+  notes: Battery output fuse between BMS and regulator
+
+- ref: TH1
+  qty: 1
+  manufacturer: TDK / Murata
+  mpn: 10k NTC thermistor
+  footprint: NTC leaded/SMT
+  mount: Hand/install
+  notes: Place against cell pack for temperature monitoring
+
+- ref: TP_BAT
+  qty: 1
+  manufacturer: Generic
+  mpn: Battery voltage test pads
+  footprint: 2x test pads
+  mount: Hand/install
+  notes: Voltage reading/test points

@@ -37,9 +37,15 @@ class EyeConfig:
 
 
 @dataclass(frozen=True)
-class LedConfig:
+class EyeDisplayConfig:
+    """Configuration for the ESP32-S3 driven eye displays.
+
+    This replaces the legacy `LedConfig` and mirrors important runtime parameters
+    (pixel counts, brightness) while keeping color/behavior settings where useful.
+    """
+
     gpio_pin: int = 7
-    leds_per_eye: int = 16
+    pixels_per_eye: int = 16
     left_color: Color = (148, 0, 255)
     right_color: Color = (0, 255, 80)
     brightness: float = 0.35
@@ -143,7 +149,7 @@ class KoalaByteConfig:
     main_compute: str = "NVIDIA Jetson Orin Nano Super 8GB"
     display: DisplayConfig = field(default_factory=DisplayConfig)
     eyes: EyeConfig = field(default_factory=EyeConfig)
-    leds: LedConfig = field(default_factory=LedConfig)
+    eye_display: EyeDisplayConfig = field(default_factory=EyeDisplayConfig)
     camera: CameraConfig = field(default_factory=CameraConfig)
     wireless: WirelessConfig = field(default_factory=WirelessConfig)
     peripherals: PeripheralConfig = field(default_factory=PeripheralConfig)
@@ -162,7 +168,9 @@ def as_dict() -> Dict[str, object]:
         "main_compute": CONFIG.main_compute,
         "display": CONFIG.display.__dict__,
         "eyes": CONFIG.eyes.__dict__,
-        "leds": CONFIG.leds.__dict__,
+        # Keep a compatibility mapping for older code expecting `leds` key
+        "eye_display": CONFIG.eye_display.__dict__,
+        "leds": CONFIG.eye_display.__dict__,
         "camera": CONFIG.camera.__dict__,
         "wireless": {
             **CONFIG.wireless.__dict__,

@@ -35,19 +35,19 @@
 
 - ref: LED_L
   qty: 1
-  manufacturer: WS2812-compatible
-  mpn: 16 LED RGB ring purple setting
-  footprint: Ring mount + JST/GH
+  manufacturer: Espressif
+  mpn: ESP32-S3 1.28-inch Dual LCD AIoT Board
+  footprint: Panel mount
   mount: Hand/install
-  notes: Left eye ultraviolet/purple animation
+  notes: Left-side LCD for dual-eye system
 
 - ref: LED_R
   qty: 1
-  manufacturer: WS2812-compatible
-  mpn: 16 LED RGB ring green setting
-  footprint: Ring mount + JST/GH
+  manufacturer: Espressif
+  mpn: ESP32-S3 1.28-inch Dual LCD AIoT Board
+  footprint: Panel mount
   mount: Hand/install
-  notes: Right eye cyber green animation
+  notes: Right-side LCD for dual-eye system
 
 - ref: U_RF1
   qty: 1

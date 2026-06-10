@@ -17,13 +17,21 @@
   mount: Hand/install
   notes: Jetson-driven display
 
+- ref: EYE1
+  qty: 1
+  manufacturer: ESP32-S3 AIoT display module
+  mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
+  footprint: Dual round LCD eye board panel mount + USB/UART clearance
+  mount: Hand/install
+  notes: Replaces separate LED_L/LED_R WS2812 eye rings; mounted above the 3.5 inch touch screen as KoalaByte dual eyes
+
 - ref: U2
   qty: 1
   manufacturer: Espressif
   mpn: ESP32-S3-WROOM-1-N16R8
   footprint: ESP32-S3 WROOM module footprint
   mount: SMT
-  notes: Auxiliary MCU for UI/buttons/LED/safety interlock
+  notes: Auxiliary MCU for UI/buttons/LED/safety interlock if not integrated into EYE1
 
 - ref: CAM1
   qty: 1
@@ -32,22 +40,6 @@
   footprint: Camera board mount + FFC clearance
   mount: Hand/install
   notes: Right-eye camera
-
-- ref: LED_L
-  qty: 1
-  manufacturer: Espressif
-  mpn: ESP32-S3 1.28-inch Dual LCD AIoT Board
-  footprint: Panel mount
-  mount: Hand/install
-  notes: Left-side LCD for dual-eye system
-
-- ref: LED_R
-  qty: 1
-  manufacturer: Espressif
-  mpn: ESP32-S3 1.28-inch Dual LCD AIoT Board
-  footprint: Panel mount
-  mount: Hand/install
-  notes: Right-side LCD for dual-eye system
 
 - ref: U_RF1
   qty: 1
@@ -105,10 +97,26 @@
   mount: SMT
   notes: 5V input; validate PD/current design
 
+- ref: J_HINGE
+  qty: 2
+  manufacturer: Molex/Amphenol
+  mpn: 30-pin 0.5mm FFC
+  footprint: FFC_30P_0.5mm
+  mount: SMT
+  notes: Head/base interconnect
+
+- ref: J_LCD
+  qty: 1
+  manufacturer: Generic
+  mpn: HDMI/5V display connector or harness
+  footprint: HDMI/FFC clearance
+  mount: SMT/Hand
+  notes: Validate selected display cable orientation
+
 - ref: BAT1
   qty: 1
   manufacturer: Custom / cell holder assembly
-  mpn: 2S2P 21700 Li-ion pack
+  mpn: 2S2P 21700 Li-ion pack, 7.4V nominal, 8.4V full, 74Wh target
   footprint: Battery bay + keyed high-current connector
   mount: Hand/install
   notes: Internal removable/serviceable battery pack
@@ -116,39 +124,127 @@
 - ref: BMS1
   qty: 1
   manufacturer: Generic / Daly / JBD equivalent
-  mpn: 2S Li-ion BMS
-  footprint: BMS module envelope 45x25mm
+  mpn: 2S Li-ion BMS, 10A continuous minimum, 15A peak preferred
+  footprint: BMS module envelope 45x25mm + mounting tape/standoffs
   mount: Hand/install
-  notes: Cell balancing, overcharge protection
+  notes: Cell balancing, overcharge, overdischarge protection
 
 - ref: REG1
   qty: 1
-  manufacturer: Pololu / DFRobot / Murata
+  manufacturer: Pololu / DFRobot / Murata equivalent
   mpn: 5V 12A synchronous buck regulator module
-  footprint: Buck regulator module envelope
+  footprint: Buck regulator module envelope 50x30mm, thermal clearance
   mount: Hand/install
-  notes: Converts 2S pack to regulated 5V system
+  notes: Converts 2S pack to regulated 5V system voltage
+
+- ref: J_BAT
+  qty: 1
+  manufacturer: Amass / Molex equivalent
+  mpn: XT30 / Micro-Fit 3.0 2-pin battery connector, 15A class
+  footprint: High-current 2-pin connector footprint/envelope
+  mount: Hand/install
+  notes: Keyed battery input connector from BMS output pack
+
+- ref: J_CHG
+  qty: 1
+  manufacturer: USB-C PD / 2S charger module
+  mpn: 2S Li-ion charger input, 8.4V CC/CV, 2A-4A target
+  footprint: Charger module envelope 35x25mm
+  mount: Hand/install
+  notes: Charging input must be isolated from live system rail or power-path regulation
 
 - ref: F1
   qty: 1
-  manufacturer: Littelfuse / Bel
-  mpn: 10A resettable fuse
+  manufacturer: Littelfuse / Bel equivalent
+  mpn: 10A resettable fuse or replaceable blade fuse
   footprint: Fuse footprint/envelope
   mount: SMT/Hand
   notes: Battery output fuse between BMS and regulator
 
+- ref: SW_PWR
+  qty: 1
+  manufacturer: E-Switch / C&K equivalent
+  mpn: Latching power switch, >=10A DC or logic-controlled load switch
+  footprint: Panel switch envelope
+  mount: Hand/install
+  notes: Main disconnect or enable signal for regulator
+
 - ref: TH1
   qty: 1
-  manufacturer: TDK / Murata
-  mpn: 10k NTC thermistor
-  footprint: NTC leaded/SMT
+  manufacturer: TDK / Murata equivalent
+  mpn: 10k NTC thermistor, battery bay
+  footprint: NTC leaded/SMT envelope
   mount: Hand/install
-  notes: Place against cell pack for temperature monitoring
+  notes: Place against cell pack for charge/discharge temperature monitoring
 
 - ref: TP_BAT
   qty: 1
   manufacturer: Generic
   mpn: Battery voltage test pads
   footprint: 2x test pads
-  mount: Hand/install
+  mount: SMT/Hand
   notes: Voltage reading/test points
+
+- ref: IR_RX1
+  qty: 1
+  manufacturer: Vishay
+  mpn: TSOP38238 38kHz infrared receiver module
+  footprint: Through-hole 3-pin IR receiver
+  mount: Hand/install
+  notes: Use for receiving/decoding common IR remote signals; place behind IR-transparent window
+
+- ref: IR_TX1
+  qty: 1
+  manufacturer: Vishay
+  mpn: TSAL6200 high-power 940nm infrared emitter LED
+  footprint: Through-hole 5mm IR LED
+  mount: Hand/install
+  notes: Use with MOSFET/NPN driver; do not drive directly from MCU GPIO
+
+- ref: Q_IR1
+  qty: 1
+  manufacturer: ON Semiconductor/Generic
+  mpn: 2N7002 N-channel MOSFET for IR LED drive
+  footprint: SOT-23
+  mount: SMT
+  notes: Switches IR transmitter current from ESP32-S3 or Jetson GPIO
+
+- ref: R_IR1
+  qty: 1
+  manufacturer: Generic
+  mpn: 10Ω-33Ω 0603 IR LED current-limiting resistor
+  footprint: 0603
+  mount: SMT
+  notes: Select value based on desired pulse current and supply voltage
+
+- ref: R_IR2
+  qty: 1
+  manufacturer: Generic
+  mpn: 100Ω 0603 MOSFET gate resistor
+  footprint: 0603
+  mount: SMT
+  notes: Reduces ringing/noise on IR transmit line
+
+- ref: R_IR3
+  qty: 1
+  manufacturer: Generic
+  mpn: 100kΩ 0603 MOSFET gate pulldown resistor
+  footprint: 0603
+  mount: SMT
+  notes: Keeps IR transmitter off during boot/reset
+
+- ref: C_IR1
+  qty: 1
+  manufacturer: Generic
+  mpn: 100nF 0603 IR receiver decoupling capacitor
+  footprint: 0603
+  mount: SMT
+  notes: Place close to IR receiver VCC pin
+
+- ref: J_IR1
+  qty: 1
+  manufacturer: JST/GH or Generic
+  mpn: 3-pin JST-GH IR service connector
+  footprint: JST-GH 1.25mm 3-pin
+  mount: SMT/Hand-install
+  notes: Optional service connector for removable IR board

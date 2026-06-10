@@ -1,0 +1,24 @@
+name: KoalaByte Firmware CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Print config
+        run: python -m koalabyte.main --print-config
+      - name: Run self-test
+        run: python -m koalabyte.main --self-test
+      - name: Run tests
+        run: pytest -q

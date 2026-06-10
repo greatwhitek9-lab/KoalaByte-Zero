@@ -7,7 +7,7 @@ class Mood(Enum):
 
 class PersonalityTier(Enum):
     """KillerKoala's evolution stages"""
-    KID = "kid"
+    NOOB = "noob"
     HACKER = "hacker"
     ELITE = "elite"
 

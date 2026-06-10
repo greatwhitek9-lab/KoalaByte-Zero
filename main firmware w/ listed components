@@ -65,7 +65,10 @@ class HardwareComponent:
 
 
 class Display:
-    """DS1: Generic 3.5 inch HDMI LCD, 5V, Jetson-driven display."""
+    """DS1: Generic 3.5 inch HDMI LCD, 5V, Jetson-driven display.
+
+    Also used for the dual 1.28" eye displays powered by ESP32-S3 modules.
+    """
 
     def __init__(self, component: HardwareComponent, width: int = 800, height: int = 480):
         self.component = component
@@ -271,8 +274,9 @@ class KoalaByteDevice:
                 height=getattr(self.hw_config, "DISPLAY_HEIGHT", 480),
             )
             self.camera = Camera(self.components["CAM1"], csi_id=0)
-            self.left_eye = LedRing(self.components["LED_L"], color_profile="ultraviolet/purple")
-            self.right_eye = LedRing(self.components["LED_R"], color_profile="cyber green")
+            # Replace LED rings with ESP32-S3 driven 1.28" displays for each eye
+            self.left_eye = Display(self.components["LED_L"], width=320, height=240)
+            self.right_eye = Display(self.components["LED_R"], width=320, height=240)
             self.battery = BatterySystem(
                 pack=self.components["BAT1"],
                 bms=self.components["BMS1"],
@@ -316,12 +320,12 @@ class KoalaByteDevice:
                 "MIPI CSI FFC", "Hand/install", "Camera board mount + FFC clearance",
             ),
             "LED_L": HardwareComponent(
-                "LED_L", "Left eye LED ring", "WS2812-compatible", "16 LED RGB ring purple setting",
-                "JST/GH data/power", "Hand/install", "Ultraviolet/purple animation",
+                "LED_L", "Left eye LCD", "Espressif", "ESP32-S3 1.28-inch Dual LCD AIoT Board",
+                "Panel mount", "Hand/install", "Left-side LCD for dual-eye system",
             ),
             "LED_R": HardwareComponent(
-                "LED_R", "Right eye LED ring", "WS2812-compatible", "16 LED RGB ring green setting",
-                "JST/GH data/power", "Hand/install", "Cyber green animation",
+                "LED_R", "Right eye LCD", "Espressif", "ESP32-S3 1.28-inch Dual LCD AIoT Board",
+                "Panel mount", "Hand/install", "Right-side LCD for dual-eye system",
             ),
             "U_RF1": HardwareComponent(
                 "U_RF1", "WiFi/BT", "MediaTek module", "MT7921K M.2 E-Key",

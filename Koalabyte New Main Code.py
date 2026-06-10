@@ -1,13 +1,32 @@
 #!/usr/bin/env python3
 """KoalaByte Unified Firmware v2.7 Main Entry Point
-This script consolidates all hardware initialization, AI companion, and critical modules based on the hardware BOM file."""
+This script consolidates all hardware initialization, AI companion, and critical modules based on the hardware BOM file.
+
+Added: integration with KillerKoala companion and SafetyInterlock (BOM-aligned).
+"""
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Callable, Dict, Optional
 from dataclasses import dataclass
+
+# Optional runtime config and AI companion imports
+try:
+    from config import (
+        get_hardware_config,
+        get_cyberpet_config,
+        get_security_config,
+        get_ui_config,
+    )
+    from cyberpet_ai import KillerKoalaCompanion
+except ImportError as e:
+    # Fail fast if these are required for runtime; allow module to be imported for static analysis
+    KillerKoalaCompanion = None
+    def _missing_config_exit():
+        sys.exit(f"Critical Error: Missing dependencies (config or cyberpet_ai). {e}")
 
 # Set up logging
 LOG_DIR = Path("/var/log/koalabyte")
@@ -71,6 +90,8 @@ class LedRing:
         self.initialized = True
 
 class BatterySystem:
+    PACK_FULL_V = 8.4
+    PACK_CRITICAL_V = 6.6
     def __init__(
             self,
             pack: HardwareComponent,
@@ -101,6 +122,15 @@ class BatterySystem:
         logger.info(f"Test Pads: {self.test_pads.describe()}")
         self.initialized = True
 
+    def read_voltage(self) -> Optional[float]:
+        if self.voltage_reader is None:
+            return None
+        try:
+            return float(self.voltage_reader())
+        except Exception as e:
+            logger.warning("Battery voltage read failed: %s", e)
+            return None
+
 class WirelessModule:
     def __init__(self, component: HardwareComponent):
         self.component = component
@@ -110,11 +140,62 @@ class WirelessModule:
         logger.info(f"Initialized Wireless Module: {self.component.describe()}")
         self.initialized = True
 
+class SafetyInterlock:
+    """Runtime gate for lab-only or risky functions."""
+    def __init__(self, security_config: Optional[dict] = None):
+        self.security_config = security_config
+        self.lab_mode_acknowledged = False
+
+    def acknowledge_lab_mode(self):
+        logger.warning("Lab-only mode acknowledged. Use only on systems you own or are authorized to test.")
+        self.lab_mode_acknowledged = True
+
+    def require_lab_mode(self) -> bool:
+        if not self.lab_mode_acknowledged:
+            logger.warning("Blocked: lab-only mode has not been acknowledged.")
+            return False
+        return True
+
+class KillerKoala:
+    """Wrapper to initialize and interact with KillerKoalaCompanion from cyberpet_ai."""
+    def __init__(self, companion: "KillerKoalaCompanion"):
+        self.companion = companion
+        self.initialized = False
+
+    def initialize(self) -> None:
+        if self.companion is None:
+            logger.error("KillerKoalaCompanion is not available. Ensure cyberpet_ai is installed.")
+            return
+        try:
+            logger.info("KillerKoala awakening...")
+            greeting = self.companion.get_idle_response()
+            logger.info("KillerKoala says: %s", greeting)
+            self.initialized = True
+        except Exception as e:
+            logger.error("KillerKoala initialization failed: %s", e, exc_info=True)
+
 class KoalaByteDevice:
+    VERSION = "2.7 Unified"
+
     def __init__(self, components: Dict[str, HardwareComponent]):
         logger.info("Initializing KoalaByte System...")
 
-        # Map components based on BOM
+        # Load runtime configs if available
+        try:
+            # These functions may raise ImportError if config module isn't present at runtime
+            self.hw_config = get_hardware_config()
+            self.pet_config = get_cyberpet_config()
+            self.sec_config = get_security_config()
+            self.ui_config = get_ui_config()
+        except Exception:
+            # Use defaults and log but don't hard-fail here so offline analysis can proceed
+            logger.warning("Config modules unavailable at runtime; running with example/defaults.")
+            self.hw_config = None
+            self.pet_config = None
+            self.sec_config = None
+            self.ui_config = None
+
+        # Map components based on BOM provided
         self.components = components
 
         # Major subsystems
@@ -139,10 +220,25 @@ class KoalaByteDevice:
         self.gps = WirelessModule(self.components['GPS1'])
         self.sdr = WirelessModule(self.components['SDR1'])
 
+        # Safety interlock
+        self.safety = SafetyInterlock(self.sec_config)
+
+        # Initialize KillerKoala companion if available
+        companion_instance = None
+        if 'pet_config' in locals() and self.pet_config is not None and KillerKoalaCompanion is not None:
+            try:
+                companion_instance = KillerKoalaCompanion(self.pet_config)
+            except Exception as e:
+                logger.warning("Failed to instantiate KillerKoalaCompanion: %s", e)
+        elif KillerKoalaCompanion is None:
+            logger.debug("KillerKoalaCompanion class not available in this environment.")
+
+        self.killerkoala = KillerKoala(companion_instance)
+
         logger.info("KoalaByte Initialization Complete.")
 
     def initialize_subsystems(self):
-        """Perform initialization of all subsystems."""
+        """Perform initialization of all subsystems and the AI companion."""
         self.display.initialize()
         self.camera.initialize()
         self.left_eye.initialize()
@@ -154,6 +250,12 @@ class KoalaByteDevice:
         self.subghz.initialize()
         self.gps.initialize()
         self.sdr.initialize()
+
+        # Initialize safety and companion
+        if self.killerkoala is not None:
+            self.killerkoala.initialize()
+        else:
+            logger.warning("KillerKoala wrapper is not present; skipping companion initialization.")
 
 if __name__ == "__main__":
     # Example BOM Component Initialization
@@ -176,5 +278,6 @@ if __name__ == "__main__":
         "SDR1": HardwareComponent("SDR1", "Software Defined Radio", "RTL-SDR", "RTL2832U", "USB", "Stick"),
     }
 
+    # Instantiate device with example BOM and initialize
     device = KoalaByteDevice(example_bom)
     device.initialize_subsystems()

@@ -86,9 +86,19 @@ class ButtonConfig:
 
 @dataclass(frozen=True)
 class PowerConfig:
-    battery: str = "single-cell LiPo pack, capacity selected by enclosure revision"
-    charging: str = "USB-C charging module"
-    protection: str = "BMS, fuse, and regulated 5V/3.3V rails"
+    battery_ref: str = "BAT1"
+    battery: str = "2S2P 21700 Li-ion pack"
+    nominal_voltage_v: float = 7.4
+    full_charge_voltage_v: float = 8.4
+    bms_ref: str = "BMS1"
+    bms: str = "2S Li-ion BMS with balancing and overcharge protection"
+    regulator_ref: str = "REG1"
+    regulator: str = "5V 12A synchronous buck regulator module"
+    regulator_path: str = "2S pack -> BMS -> F1 fuse -> REG1 5V system rail"
+    power_input_ref: str = "J_USB"
+    power_input: str = "USB-C 5V input; validate PD/current design"
+    fuse_ref: str = "F1"
+    fuse: str = "10A resettable fuse between BMS output and regulator"
     low_battery_percent: int = 15
     critical_battery_percent: int = 7
 

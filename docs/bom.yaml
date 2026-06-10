@@ -105,6 +105,14 @@
   mount: SMT
   notes: 5V input; validate PD/current design
 
+- ref: J_CHG
+  qty: 1
+  manufacturer: USB-C PD / 2S charger module
+  mpn: 2S Li-ion charger input, 8.4V CC/CV, 2A-4A target
+  footprint: Charger module envelope 35x25mm
+  mount: Hand/install
+  notes: Charging input must be isolated from live system rail or power-path regulation
+
 - ref: BAT1
   qty: 1
   manufacturer: Custom / cell holder assembly

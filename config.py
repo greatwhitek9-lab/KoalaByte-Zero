@@ -12,21 +12,21 @@ class HardwareConfig:
     JETSON_RAM_GB: int = 8
     JETSON_STORAGE_GB: int = 64
 
-    ESP32_VARIANT: str = "ESP32-S3-WROOM-1-N8R8"
+    ESP32_VARIANT: str = "ESP32-S3-DualEye-LCD-1.28"
     UART_BAUDRATE: int = 115200
 
-    DISPLAY_WIDTH: int = 800
-    DISPLAY_HEIGHT: int = 480
+    DISPLAY_WIDTH: int = 240  # Updated for ESP32-S3-DualEye-LCD-1.28
+    DISPLAY_HEIGHT: int = 240
     DISPLAY_DPI: int = 140
-    DISPLAY_INTERFACE: str = "HDMI"
+    DISPLAY_INTERFACE: str = "SPI"
 
     CAMERA_RESOLUTION: tuple = (1920, 1080)
     CAMERA_FPS: int = 30
     CAMERA_MODULE: str = "IMX219"
 
-    LED_COUNT_PER_RING: int = 24
-    LED_LEFT_COLOR: tuple = (128, 0, 255)
-    LED_RIGHT_COLOR: tuple = (0, 255, 0)
+    LED_COUNT_PER_RING: int = 16
+    LED_LEFT_COLOR: tuple = (255, 0, 0)
+    LED_RIGHT_COLOR: tuple = (0, 255, 255)
     LED_NOSE_COLOR: tuple = (255, 255, 255)
 
     BATTERY_CAPACITY_MAH: int = 10000
@@ -52,7 +52,6 @@ class HardwareConfig:
                 "F6": {"function": "Settings", "gpio": 25},
                 "POWER": {"function": "Power Toggle", "gpio": 4},
             }
-
 
 @dataclass
 class CyberpetConfig:
@@ -107,12 +106,10 @@ class CyberpetConfig:
                 "WiFi signals detected. Time to "
             ]
 
-
 @dataclass
 class SecurityConfig:
     LAB_MODE_REQUIRED: bool = True
     ALLOW_OFFENSIVE_TOOLS: bool = True
-
 
 @dataclass
 class UIConfig:
@@ -122,20 +119,16 @@ class UIConfig:
     background_color: tuple = (10, 10, 20)
     text_color: tuple = (200, 255, 200)
 
-
 # Getter functions used by firmware.py
 
 def get_hardware_config() -> HardwareConfig:
     return HardwareConfig()
 
-
 def get_cyberpet_config() -> CyberpetConfig:
     return CyberpetConfig()
 
-
 def get_security_config() -> SecurityConfig:
     return SecurityConfig()
-
 
 def get_ui_config() -> UIConfig:
     return UIConfig()

@@ -13,6 +13,7 @@ ASSETS_DIR = ROOT_DIR / "assets"
 DOCS_DIR = ROOT_DIR / "docs"
 
 Color = Tuple[int, int, int]
+DUAL_EYE_BOARD = "ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays"
 
 
 @dataclass(frozen=True)
@@ -27,28 +28,28 @@ class DisplayConfig:
 
 @dataclass(frozen=True)
 class EyeConfig:
-    controller: str = "ESP32-S3-DualEye-LCD-1.28"
+    ref: str = "EYE1"
+    controller: str = DUAL_EYE_BOARD
     uart_port: str = "/dev/ttyTHS1"
     baudrate: int = 921600
+    interface: str = "USB/UART"
+    mount_location: str = "above 3.5 inch touch screen"
     left_theme: str = "ultraviolet"
     right_theme: str = "cyber_green"
-    left_eye_display: str = "1.28 inch round LCD"
-    right_eye_display: str = "1.28 inch round LCD"
+    left_eye_display: str = "1.28 inch round IPS LCD"
+    right_eye_display: str = "1.28 inch round IPS LCD"
 
 
 @dataclass(frozen=True)
 class EyeDisplayConfig:
-    """Configuration for the ESP32-S3 driven eye displays.
+    """Display behavior for the ESP32-S3 dual-eye LCD board."""
 
-    This replaces the legacy `LedConfig` and mirrors important runtime parameters
-    (pixel counts, brightness) while keeping color/behavior settings where useful.
-    """
-
-    gpio_pin: int = 7
-    pixels_per_eye: int = 16
+    board_ref: str = "EYE1"
+    board: str = DUAL_EYE_BOARD
     left_color: Color = (148, 0, 255)
     right_color: Color = (0, 255, 80)
     brightness: float = 0.35
+    legacy_ws2812_eye_rings: bool = False
 
 
 @dataclass(frozen=True)
@@ -168,7 +169,6 @@ def as_dict() -> Dict[str, object]:
         "main_compute": CONFIG.main_compute,
         "display": CONFIG.display.__dict__,
         "eyes": CONFIG.eyes.__dict__,
-        # Keep a compatibility mapping for older code expecting `leds` key
         "eye_display": CONFIG.eye_display.__dict__,
         "leds": CONFIG.eye_display.__dict__,
         "camera": CONFIG.camera.__dict__,

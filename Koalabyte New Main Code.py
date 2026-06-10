@@ -23,7 +23,7 @@ try:
     )
     from cyberpet_ai import KillerKoalaCompanion
 except ImportError as e:
-    # Fail fast if these are required for runtime; allow module to be imported for static analysis
+    # Allow static analysis / CI without runtime deps
     KillerKoalaCompanion = None
     def _missing_config_exit():
         sys.exit(f"Critical Error: Missing dependencies (config or cyberpet_ai). {e}")
@@ -177,7 +177,7 @@ class KillerKoala:
 class KoalaByteDevice:
     VERSION = "2.7 Unified"
 
-    def __init__(self, components: Dict[str, HardwareComponent]):
+    def __init__(self, components: Optional[Dict[str, HardwareComponent]] = None):
         logger.info("Initializing KoalaByte System...")
 
         # Load runtime configs if available
@@ -195,8 +195,11 @@ class KoalaByteDevice:
             self.sec_config = None
             self.ui_config = None
 
-        # Map components based on BOM provided
-        self.components = components
+        # Map components based on BOM provided or load from docs/BOM
+        if components is None:
+            self.components = self._load_bom_components()
+        else:
+            self.components = components
 
         # Major subsystems
         self.display = Display(self.components['DS1'])
@@ -225,7 +228,7 @@ class KoalaByteDevice:
 
         # Initialize KillerKoala companion if available
         companion_instance = None
-        if 'pet_config' in locals() and self.pet_config is not None and KillerKoalaCompanion is not None:
+        if self.pet_config is not None and KillerKoalaCompanion is not None:
             try:
                 companion_instance = KillerKoalaCompanion(self.pet_config)
             except Exception as e:
@@ -236,6 +239,68 @@ class KoalaByteDevice:
         self.killerkoala = KillerKoala(companion_instance)
 
         logger.info("KoalaByte Initialization Complete.")
+
+    def _load_bom_components(self) -> Dict[str, HardwareComponent]:
+        """Parse docs/BOM and return a mapping of ref -> HardwareComponent.
+
+        Expected BOM format (tab-separated columns):
+        Ref\tQty\tManufacturer/Series\tMPN / Module\tFootprint strategy\tMount\tNotes
+        """
+        bom_path = Path(__file__).parent / "docs" / "BOM"
+        components: Dict[str, HardwareComponent] = {}
+
+        if not bom_path.exists():
+            logger.warning("BOM file not found at %s; falling back to minimal placeholder components.", bom_path)
+            # Minimal placeholders to avoid KeyError later
+            placeholders = ["DS1", "CAM1", "LED_L", "LED_R", "BAT1", "BMS1", "REG1", "F1", "TH1", "TP_BAT", "U_RF1", "U_RF2", "U_RF3", "U_RF4", "GPS1", "SDR1"]
+            for ref in placeholders:
+                components[ref] = HardwareComponent(ref, ref, "Unknown", "", "", "Unknown")
+            return components
+
+        try:
+            text = bom_path.read_text(encoding="utf-8")
+        except Exception as e:
+            logger.error("Failed to read BOM file: %s", e)
+            return {}
+
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        # Skip header if present
+        header = lines[0] if lines else ""
+        start_index = 1 if header.lower().startswith("ref") else 0
+
+        for ln in lines[start_index:]:
+            cols = [c.strip() for c in ln.split("\t")]
+            if not cols or len(cols) < 1:
+                continue
+            ref = cols[0]
+            # Derive fields with safe indexing
+            manufacturer = cols[2] if len(cols) > 2 else ""
+            mpn = cols[3] if len(cols) > 3 else ""
+            footprint = cols[4] if len(cols) > 4 else ""
+            mount = cols[5] if len(cols) > 5 else ""
+            notes = cols[6] if len(cols) > 6 else ""
+
+            # Name: prefer MPN/Module column if descriptive, otherwise manufacturer or ref
+            name = mpn or manufacturer or ref
+
+            components[ref] = HardwareComponent(
+                ref=ref,
+                name=name,
+                manufacturer=manufacturer,
+                mpn_or_module=mpn,
+                interface=footprint,
+                mount=mount,
+                notes=notes,
+            )
+
+        # Ensure critical keys exist (BOM may omit optional rows); fill placeholders if missing
+        critical = ["DS1", "CAM1", "LED_L", "LED_R", "BAT1", "BMS1", "REG1", "F1", "TH1", "TP_BAT", "U_RF1", "U_RF2", "U_RF3", "U_RF4", "GPS1", "SDR1"]
+        for ref in critical:
+            if ref not in components:
+                components[ref] = HardwareComponent(ref, ref, "Unknown", "", "", "Unknown")
+
+        logger.info("Loaded %d components from BOM", len(components))
+        return components
 
     def initialize_subsystems(self):
         """Perform initialization of all subsystems and the AI companion."""
@@ -258,26 +323,6 @@ class KoalaByteDevice:
             logger.warning("KillerKoala wrapper is not present; skipping companion initialization.")
 
 if __name__ == "__main__":
-    # Example BOM Component Initialization
-    example_bom = {
-        "DS1": HardwareComponent("DS1", "3.5 inch HDMI Display", "Generic", "HDMI LCD", "HDMI", "Panel Mount"),
-        "CAM1": HardwareComponent("CAM1", "IMX708 CSI Camera", "Arducam", "IMX708", "CSI", "Board Mount"),
-        "LED_L": HardwareComponent("LED_L", "Left LED Ring", "Custom", "WS2812B", "GPIO", "Ring Mount"),
-        "LED_R": HardwareComponent("LED_R", "Right LED Ring", "Custom", "WS2812B", "GPIO", "Ring Mount"),
-        "BAT1": HardwareComponent("BAT1", "Li-ion Battery Pack", "Custom", "2S2P 21700", "XT30", "Battery Bay"),
-        "BMS1": HardwareComponent("BMS1", "Battery Management System", "Generic", "2S BMS", "Connector", "Inline"),
-        "REG1": HardwareComponent("REG1", "5V Regulator", "Murata", "DC-DC", "High Current", "PCB Mount"),
-        "F1": HardwareComponent("F1", "10A Fuse", "Littelfuse", "Resettable", "PC Mount", "Inline Safety"),
-        "TH1": HardwareComponent("TH1", "Thermistor", "TDK", "10k NTC", "Lead", "Temperature Sensor"),
-        "TP_BAT": HardwareComponent("TP_BAT", "Test Pads", "Custom", "Pads", "SMD", "Voltage Reads"),
-        "U_RF1": HardwareComponent("U_RF1", "WiFi/Bluetooth Module", "MediaTek", "MT7921K", "M.2", "Internal"),
-        "U_RF2": HardwareComponent("U_RF2", "NFC Module", "Elechouse", "PN532", "I2C", "Board"),
-        "U_RF3": HardwareComponent("U_RF3", "BLE Module", "Raytac", "nRF52840", "I2C", "Board"),
-        "U_RF4": HardwareComponent("U_RF4", "Sub-GHz Module", "Ebyte", "CC1101", "GPIO", "Board"),
-        "GPS1": HardwareComponent("GPS1", "GPS Module", "U-Blox", "NEO-M8N", "UART", "Board"),
-        "SDR1": HardwareComponent("SDR1", "Software Defined Radio", "RTL-SDR", "RTL2832U", "USB", "Stick"),
-    }
-
-    # Instantiate device with example BOM and initialize
-    device = KoalaByteDevice(example_bom)
+    # Instantiate device where BOM will be parsed from docs/BOM
+    device = KoalaByteDevice()
     device.initialize_subsystems()

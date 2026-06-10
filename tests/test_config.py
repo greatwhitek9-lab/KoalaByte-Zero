@@ -16,8 +16,12 @@ def test_power_config_matches_checked_in_bom():
     assert CONFIG.power.battery == "2S2P 21700 Li-ion pack"
     assert CONFIG.power.bms_ref == "BMS1"
     assert CONFIG.power.bms.startswith("2S Li-ion BMS")
+    assert CONFIG.power.charger_ref == "J_CHG"
+    assert "8.4V CC/CV" in CONFIG.power.charger
+    assert "2A-4A" in CONFIG.power.charger
     assert CONFIG.power.regulator_ref == "REG1"
     assert CONFIG.power.regulator == "5V 12A synchronous buck regulator module"
+    assert CONFIG.power.power_input_ref == "J_USB"
     assert CONFIG.power.fuse_ref == "F1"
     assert "2S pack" in CONFIG.power.regulator_path
 
@@ -26,3 +30,4 @@ def test_config_serializes():
     data = as_dict()
     assert data["board"] == "KoalaByte Rev 0.5 Version B"
     assert data["power"]["battery"] == "2S2P 21700 Li-ion pack"
+    assert data["power"]["charger_ref"] == "J_CHG"

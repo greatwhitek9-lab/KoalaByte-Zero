@@ -92,11 +92,14 @@ class PowerConfig:
     full_charge_voltage_v: float = 8.4
     bms_ref: str = "BMS1"
     bms: str = "2S Li-ion BMS with balancing and overcharge protection"
+    charger_ref: str = "J_CHG"
+    charger: str = "2S Li-ion charger input, 8.4V CC/CV, 2A-4A target"
+    charger_notes: str = "Charging input must be isolated from live system rail or power-path regulation"
     regulator_ref: str = "REG1"
     regulator: str = "5V 12A synchronous buck regulator module"
     regulator_path: str = "2S pack -> BMS -> F1 fuse -> REG1 5V system rail"
     power_input_ref: str = "J_USB"
-    power_input: str = "USB-C 5V input; validate PD/current design"
+    power_input: str = "USB-C power input 16-pin, 5V input; validate PD/current design"
     fuse_ref: str = "F1"
     fuse: str = "10A resettable fuse between BMS output and regulator"
     low_battery_percent: int = 15

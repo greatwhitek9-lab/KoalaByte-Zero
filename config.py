@@ -24,10 +24,17 @@ class HardwareConfig:
     CAMERA_FPS: int = 30
     CAMERA_MODULE: str = "IMX219"
 
+    # Backwards-compatible LED_* constants kept for scripts/tests that still reference them
     LED_COUNT_PER_RING: int = 16
     LED_LEFT_COLOR: tuple = (255, 0, 0)
     LED_RIGHT_COLOR: tuple = (0, 255, 255)
     LED_NOSE_COLOR: tuple = (255, 255, 255)
+
+    # New eye/display specific constants
+    EYE_PIXELS_PER_DISPLAY: int = 16
+    EYE_LEFT_COLOR: tuple = (148, 0, 255)
+    EYE_RIGHT_COLOR: tuple = (0, 255, 80)
+    EYE_BRIGHTNESS: float = 0.35
 
     BATTERY_CAPACITY_MAH: int = 10000
     BATTERY_VOLTAGE_NOMINAL: float = 7.4

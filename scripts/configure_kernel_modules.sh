@@ -1,12 +1,17 @@
-#!/bin/bash
-# Enable wireless monitor mode
-sudo modprobe -r brcmfmac
-sudo modprobe brcmfmac
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Enable SPI for display (Jetson/Ubuntu-based boards may use different config locations)
-if [ -f /boot/firmware/config.txt ]; then
-  echo "dtparam=spi=on" | sudo tee -a /boot/firmware/config.txt
-  echo "Appended dtparam=spi=on to /boot/firmware/config.txt"
-else
-  echo "Warning: /boot/firmware/config.txt not found; please enable SPI in your board's configuration manually."
-fi
+cat <<'MSG'
+KoalaByte Rev 0.5 host check
+
+This script no longer unloads Broadcom modules or edits Raspberry Pi config files.
+The Rev 0.5 target uses Jetson Orin Nano Super with MT7921K wireless.
+
+Recommended checks:
+  lspci | grep -i mediatek
+  lsusb
+  uname -a
+  python3 -m koalabyte.main --self-test
+
+Enable Jetson interfaces through NVIDIA Jetson-IO / device-tree configuration for your carrier board.
+MSG

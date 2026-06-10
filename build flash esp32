@@ -1,2 +1,0 @@
-cd esp32_mcu/control_firmware
-platformio run --target upload --upload-port /dev/ttyUSB0

@@ -22,6 +22,7 @@ class DisplayConfig:
     height: int = 480
     interface: str = "HDMI"
     touch_interface: str = "USB/I2C bridge, model dependent"
+    splash_asset: str = "assets/koalabyte_logo.png"
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,8 @@ class EyeConfig:
     baudrate: int = 921600
     left_theme: str = "ultraviolet"
     right_theme: str = "cyber_green"
+    left_eye_display: str = "1.28 inch round LCD"
+    right_eye_display: str = "1.28 inch round LCD"
 
 
 @dataclass(frozen=True)
@@ -47,6 +50,16 @@ class CameraConfig:
     model: str = "IMX219"
     interface: str = "CSI-0"
     location: str = "right eye"
+    default_resolution: str = "1920x1080"
+
+
+@dataclass(frozen=True)
+class AntennaConfig:
+    wifi_internal: str = "dual internal 2.4/5 GHz antennas"
+    wifi_external: str = "dual external SMA/IPEX antenna option"
+    nfc: str = "left-ear internal NFC coil"
+    gps: str = "active ceramic patch antenna"
+    subghz: str = "CC1101 tuned antenna matched to selected band"
 
 
 @dataclass(frozen=True)
@@ -57,6 +70,27 @@ class WirelessConfig:
     external_antennas: int = 2
     bluetooth_coprocessor: str = "nRF52840"
     bluetooth_uart: str = "/dev/ttyTHS2"
+    antennas: AntennaConfig = field(default_factory=AntennaConfig)
+
+
+@dataclass(frozen=True)
+class ButtonConfig:
+    f1: str = "ESP32-S3 UART command: F1"
+    f2: str = "ESP32-S3 UART command: F2"
+    f3: str = "ESP32-S3 UART command: F3"
+    f4: str = "ESP32-S3 UART command: F4"
+    f5: str = "ESP32-S3 UART command: F5"
+    f6: str = "ESP32-S3 UART command: F6"
+    nose_switch_gpio: int = 15
+
+
+@dataclass(frozen=True)
+class PowerConfig:
+    battery: str = "single-cell LiPo pack, capacity selected by enclosure revision"
+    charging: str = "USB-C charging module"
+    protection: str = "BMS, fuse, and regulated 5V/3.3V rails"
+    low_battery_percent: int = 15
+    critical_battery_percent: int = 7
 
 
 @dataclass(frozen=True)
@@ -71,7 +105,7 @@ class PeripheralConfig:
     rtl_sdr_bus: str = "USB3"
     ir_rx_gpio: int = 23
     ir_tx_gpio: int = 24
-    nose_switch_gpio: int = 15
+    buttons: ButtonConfig = field(default_factory=ButtonConfig)
 
 
 @dataclass(frozen=True)
@@ -100,6 +134,7 @@ class KoalaByteConfig:
     camera: CameraConfig = field(default_factory=CameraConfig)
     wireless: WirelessConfig = field(default_factory=WirelessConfig)
     peripherals: PeripheralConfig = field(default_factory=PeripheralConfig)
+    power: PowerConfig = field(default_factory=PowerConfig)
     safety: SafetyConfig = field(default_factory=SafetyConfig)
 
 
@@ -116,7 +151,14 @@ def as_dict() -> Dict[str, object]:
         "eyes": CONFIG.eyes.__dict__,
         "leds": CONFIG.leds.__dict__,
         "camera": CONFIG.camera.__dict__,
-        "wireless": CONFIG.wireless.__dict__,
-        "peripherals": CONFIG.peripherals.__dict__,
+        "wireless": {
+            **CONFIG.wireless.__dict__,
+            "antennas": CONFIG.wireless.antennas.__dict__,
+        },
+        "peripherals": {
+            **CONFIG.peripherals.__dict__,
+            "buttons": CONFIG.peripherals.buttons.__dict__,
+        },
+        "power": CONFIG.power.__dict__,
         "safety": CONFIG.safety.__dict__,
     }

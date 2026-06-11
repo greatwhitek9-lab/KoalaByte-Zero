@@ -14,6 +14,8 @@ DOCS_DIR = ROOT_DIR / "docs"
 
 Color = Tuple[int, int, int]
 DUAL_EYE_BOARD = "ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays"
+CAMERA_LOCATION = "centered just above eyes and below ears"
+REAR_POWER_SWITCH_LOCATION = "back of device"
 
 
 @dataclass(frozen=True)
@@ -56,7 +58,7 @@ class EyeDisplayConfig:
 class CameraConfig:
     model: str = "IMX219"
     interface: str = "CSI-0"
-    location: str = "right eye"
+    location: str = CAMERA_LOCATION
     default_resolution: str = "1920x1080"
 
 
@@ -88,7 +90,6 @@ class ButtonConfig:
     f4: str = "ESP32-S3 UART command: F4"
     f5: str = "ESP32-S3 UART command: F5"
     f6: str = "ESP32-S3 UART command: F6"
-    nose_switch_gpio: int = 15
 
 
 @dataclass(frozen=True)
@@ -104,11 +105,14 @@ class PowerConfig:
     charger_notes: str = "Charging input must be isolated from live system rail or power-path regulation"
     regulator_ref: str = "REG1"
     regulator: str = "5V 12A synchronous buck regulator module"
-    regulator_path: str = "2S pack -> BMS -> F1 fuse -> REG1 5V system rail"
+    regulator_path: str = "2S pack -> BMS -> F1 fuse -> SW_PWR rear switch -> REG1 5V system rail"
     power_input_ref: str = "J_USB"
     power_input: str = "USB-C power input 16-pin, 5V input; validate PD/current design"
     fuse_ref: str = "F1"
-    fuse: str = "10A resettable fuse between BMS output and regulator"
+    fuse: str = "10A resettable fuse between BMS output and rear power switch/regulator"
+    power_switch_ref: str = "SW_PWR"
+    power_switch: str = "Back-mounted power on/off switch"
+    power_switch_location: str = REAR_POWER_SWITCH_LOCATION
     low_battery_percent: int = 15
     critical_battery_percent: int = 7
 

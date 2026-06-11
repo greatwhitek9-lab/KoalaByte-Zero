@@ -1,9 +1,9 @@
 Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
 U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
 DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
-EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Replaces separate LED_L/LED_R WS2812 eye rings; mounted above the 3.5 inch touch screen as KoalaByte dual eyes
-U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/LED/safety interlock if not integrated into EYE1
-CAM1	1	Arducam	IMX708 CSI camera module	Camera board mount + FFC clearance	Hand/install	Right-eye camera
+EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Mounted above the 3.5 inch touch screen as KoalaByte dual eyes
+U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/safety interlock if not integrated into EYE1
+CAM1	1	Arducam	IMX708 CSI camera module	Centered camera mount above EYE1 and below enlarged ears + FFC clearance	Hand/install	Camera centered just above eyes and below ears
 U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
 U_RF2	1	Elechouse/Generic	PN532 NFC module	Header/castellated module	Hand/install	I2C NFC
 U_RF3	1	Raytac/Adafruit	nRF52840 module	Header/castellated module	Hand/install	BLE coprocessor
@@ -18,8 +18,8 @@ BMS1	1	Generic / Daly / JBD equivalent	2S Li-ion BMS, 10A continuous minimum, 15
 REG1	1	Pololu / DFRobot / Murata equivalent	5V 12A synchronous buck regulator module	Buck regulator module envelope 50x30mm, thermal clearance	Hand/install	Converts 2S pack to regulated 5V system voltage
 J_BAT	1	Amass / Molex equivalent	XT30 / Micro-Fit 3.0 2-pin battery connector, 15A class	High-current 2-pin connector footprint/envelope	Hand/install	Keyed battery input connector from BMS output pack
 J_CHG	1	USB-C PD / 2S charger module	2S Li-ion charger input, 8.4V CC/CV, 2A-4A target	Charger module envelope 35x25mm	Hand/install	Charging input must be isolated from live system rail or power-path regulation
-F1	1	Littelfuse / Bel equivalent	10A resettable fuse or replaceable blade fuse	Fuse footprint/envelope	SMT/Hand	Battery output fuse between BMS and regulator
-SW_PWR	1	E-Switch / C&K equivalent	Latching power switch, >=10A DC or logic-controlled load switch	Panel switch envelope	Hand/install	Main disconnect or enable signal for regulator
+F1	1	Littelfuse / Bel equivalent	10A resettable fuse or replaceable blade fuse	Fuse footprint/envelope	SMT/Hand	Battery output fuse between BMS and rear power switch
+SW_PWR	1	E-Switch / C&K equivalent	Back-mounted latching power on/off switch, >=10A DC or logic-controlled load switch	Rear panel switch envelope	Hand/install	Back of device; main disconnect or enable signal for regulator
 TH1	1	TDK / Murata equivalent	10k NTC thermistor, battery bay	NTC leaded/SMT envelope	Hand/install	Place against cell pack for charge/discharge temperature monitoring
 TP_BAT	1	Generic	Battery voltage test pads	2x test pads	SMT/Hand	Voltage reading/test points
 IR_RX1	1	Vishay	TSOP38238 38kHz infrared receiver module	Through-hole 3-pin IR receiver	Hand/install	Use for receiving/decoding common IR remote signals; place behind IR-transparent window

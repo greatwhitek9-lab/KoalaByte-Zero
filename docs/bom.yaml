@@ -23,7 +23,7 @@
   mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
   footprint: Dual round LCD eye board panel mount + USB/UART clearance
   mount: Hand/install
-  notes: Replaces separate LED_L/LED_R WS2812 eye rings; mounted above the 3.5 inch touch screen as KoalaByte dual eyes
+  notes: Mounted above the 3.5 inch touch screen as KoalaByte dual eyes
 
 - ref: U2
   qty: 1
@@ -31,15 +31,15 @@
   mpn: ESP32-S3-WROOM-1-N16R8
   footprint: ESP32-S3 WROOM module footprint
   mount: SMT
-  notes: Auxiliary MCU for UI/buttons/LED/safety interlock if not integrated into EYE1
+  notes: Auxiliary MCU for UI/buttons/safety interlock if not integrated into EYE1
 
 - ref: CAM1
   qty: 1
   manufacturer: Arducam
   mpn: IMX708 CSI camera module
-  footprint: Camera board mount + FFC clearance
+  footprint: Centered camera mount above EYE1 and below enlarged ears + FFC clearance
   mount: Hand/install
-  notes: Right-eye camera
+  notes: Camera centered just above eyes and below ears
 
 - ref: U_RF1
   qty: 1
@@ -159,15 +159,15 @@
   mpn: 10A resettable fuse or replaceable blade fuse
   footprint: Fuse footprint/envelope
   mount: SMT/Hand
-  notes: Battery output fuse between BMS and regulator
+  notes: Battery output fuse between BMS and rear power switch
 
 - ref: SW_PWR
   qty: 1
   manufacturer: E-Switch / C&K equivalent
-  mpn: Latching power switch, >=10A DC or logic-controlled load switch
-  footprint: Panel switch envelope
+  mpn: Back-mounted latching power on/off switch, >=10A DC or logic-controlled load switch
+  footprint: Rear panel switch envelope
   mount: Hand/install
-  notes: Main disconnect or enable signal for regulator
+  notes: Back of device; main disconnect or enable signal for regulator
 
 - ref: TH1
   qty: 1

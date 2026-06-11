@@ -5,10 +5,13 @@ This file is retained only as a human-readable reference for older Rev 0.5
 production notes. The canonical runtime lives under the koalabyte/ package and
 the canonical hardware source is docs/BOM plus docs/bom.yaml.
 
-Eye hardware note:
+Rev 0.5 placement notes:
 - Legacy LED_L / LED_R WS2812 eye rings have been retired.
 - Rev 0.5 production uses EYE1: ESP32-S3 1.28inch Double Eye Round LCD AIoT
   Development Board, Onboard Dual 1.28inch IPS Displays.
+- The old nose switch is removed.
+- SW_PWR is a back-mounted power on/off switch.
+- CAM1 is centered just above the eyes and below the enlarged ears.
 """
 from __future__ import annotations
 
@@ -66,12 +69,12 @@ COMPONENTS: Dict[str, HardwareComponent] = {
     ),
     "CAM1": HardwareComponent(
         "CAM1",
-        "Right-eye camera",
+        "Centered camera",
         "Arducam",
         "IMX708 CSI camera module",
         "MIPI CSI FFC",
         "Hand/install",
-        "Camera board mount + FFC clearance",
+        "Camera centered just above eyes and below ears",
     ),
     "U_RF1": HardwareComponent(
         "U_RF1",
@@ -119,7 +122,24 @@ COMPONENTS: Dict[str, HardwareComponent] = {
         "Charger module envelope 35x25mm",
         "Hand/install",
     ),
-    "F1": HardwareComponent("F1", "Battery fuse", "Littelfuse / Bel equivalent", "10A resettable fuse", "Fuse", "SMT/Hand"),
+    "F1": HardwareComponent(
+        "F1",
+        "Battery fuse",
+        "Littelfuse / Bel equivalent",
+        "10A resettable fuse",
+        "Fuse",
+        "SMT/Hand",
+        "Battery output fuse between BMS and rear power switch",
+    ),
+    "SW_PWR": HardwareComponent(
+        "SW_PWR",
+        "Rear power on/off switch",
+        "E-Switch / C&K equivalent",
+        "Back-mounted latching power on/off switch",
+        "Rear panel switch envelope",
+        "Hand/install",
+        "Back of device; main disconnect or enable signal for regulator",
+    ),
 }
 
 

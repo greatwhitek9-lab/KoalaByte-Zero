@@ -7,6 +7,8 @@ get_security_config(), or get_ui_config().
 from dataclasses import dataclass
 
 DUAL_EYE_BOARD = "ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays"
+CAMERA_LOCATION = "centered just above eyes and below ears"
+REAR_POWER_SWITCH_LOCATION = "back of device"
 
 
 @dataclass
@@ -35,6 +37,11 @@ class HardwareConfig:
     CAMERA_RESOLUTION: tuple = (1920, 1080)
     CAMERA_FPS: int = 30
     CAMERA_MODULE: str = "IMX219"
+    CAMERA_LOCATION: str = CAMERA_LOCATION
+
+    POWER_SWITCH_REF: str = "SW_PWR"
+    POWER_SWITCH_LOCATION: str = REAR_POWER_SWITCH_LOCATION
+    NOSE_SWITCH_ENABLED: bool = False
 
     BATTERY_CAPACITY_MAH: int = 10000
     BATTERY_VOLTAGE_NOMINAL: float = 7.4
@@ -57,7 +64,7 @@ class HardwareConfig:
                 "F4": {"function": "NFC/RFID", "gpio": 23},
                 "F5": {"function": "Lab Tools", "gpio": 24},
                 "F6": {"function": "Settings", "gpio": 25},
-                "POWER": {"function": "Power Toggle", "gpio": 4},
+                "POWER": {"function": "Rear Power Toggle", "location": REAR_POWER_SWITCH_LOCATION},
             }
 
 

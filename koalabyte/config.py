@@ -107,7 +107,12 @@ class UsbConfig:
 class AudioConfig:
     speaker_ref: str = "SPK1"
     speaker: str = "8 Ohm mini speaker / piezo buzzer"
-    purpose: str = "UI sounds and alerts"
+    microphone_ref: str = "MIC1"
+    microphone: str = "I2S MEMS digital microphone module"
+    microphone_interface: str = "I2S or USB audio adapter"
+    microphone_location: str = "inside right ear"
+    microphone_purpose: str = "speech input for KoalaByte AI pet voice interaction"
+    purpose: str = "UI sounds, alerts, and voice interaction"
     optional_amp_recommended: bool = True
 
 

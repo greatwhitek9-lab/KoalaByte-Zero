@@ -131,7 +131,7 @@ class ButtonConfig:
 @dataclass(frozen=True)
 class PowerConfig:
     battery_ref: str = "PWR1/BAT1"
-    battery: str = "USB-C PD power bank or 2S2P 21700 Li-ion pack + BMS"
+    battery: str = "USB-C PD power bank or 2S Li-ion pack + BMS"
     nominal_voltage_v: float = 7.4
     full_charge_voltage_v: float = 8.4
     bms_ref: str = "BMS1"

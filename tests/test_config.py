@@ -5,6 +5,7 @@ import yaml
 from koalabyte.config import CONFIG, as_dict
 from koalabyte.main import DRIVERS
 from koalabyte.drivers.eye_display import EyeDisplayDriver
+from koalabyte.drivers.ledring import LedRingDriver
 
 
 def _structured_bom_refs():
@@ -46,6 +47,13 @@ def test_runtime_uses_eye_display_driver_not_led_ring_driver():
     assert "LedRingDriver" not in driver_names
     assert EyeDisplayDriver in DRIVERS
     result = EyeDisplayDriver(CONFIG).self_test()
+    assert result["status"] == "pass"
+    assert "EYE1" in result["detail"]
+    assert "LED_L/LED_R" in result["detail"]
+
+
+def test_legacy_ledring_alias_accepts_canonical_config():
+    result = LedRingDriver(CONFIG).self_test()
     assert result["status"] == "pass"
     assert "EYE1" in result["detail"]
     assert "LED_L/LED_R" in result["detail"]

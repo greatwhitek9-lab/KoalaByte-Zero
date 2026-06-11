@@ -11,7 +11,7 @@
 - Jetson Orin Nano Super 8GB or compatible Jetson carrier setup.
 - 3.5 inch HDMI touchscreen connected to HDMI and its touch interface.
 - ESP32-S3-DualEye-LCD-1.28 used as the dual-eye controller.
-- IMX219 camera connected on CSI-0 and mounted in the right eye.
+- IMX708 camera connected on CSI-0 and mounted on the front face, centered below the dual-eye display board and above the 3.5 inch touchscreen.
 - PN532 NFC module with the coil placed inside the left ear.
 - MT7921K Wi-Fi/Bluetooth module on M.2 Key-E PCIe.
 - Optional connected peripherals: nRF52840, NEO-M8N GPS, RTL-SDR, CC1101, and IR RX/TX.

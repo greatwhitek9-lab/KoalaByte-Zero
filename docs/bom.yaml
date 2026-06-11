@@ -1,6 +1,6 @@
 # BOM for Koalabyte Zero Rev 0.5 Version B firmware + production starter package
 # Keep aligned with koalabyte/config.py and device build schematics/.
-# Normalized production target: DS1 800x480, CAM1 IMX708, REG1 5V 10-12A, F1 10A-class protection.
+# Normalized production target includes MIC1 right-ear voice microphone for the AI pet.
 
 - ref: A1
   aliases: [U1]
@@ -10,7 +10,7 @@
   mpn: Jetson Orin Nano Super Developer Kit
   footprint: Dev kit module / carrier mounting envelope
   mount: Hand/install
-  notes: Main AI/compute board; keep as off-the-shelf module for Rev0.5 and validate official NVIDIA mechanical/pinout docs before any custom carrier.
+  notes: Main AI compute board; keep as off-the-shelf module for Rev0.5.
 
 - ref: EYE1
   qty: 1
@@ -19,7 +19,7 @@
   mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
   footprint: Dual round LCD eye board panel mount + USB/UART clearance
   mount: Hand/install
-  notes: KoalaByte dual-eye display/controller board above the 3.5 inch main screen and below enlarged ears; replaces separate legacy eye-ring concept.
+  notes: KoalaByte dual-eye display/controller board above the 3.5 inch main screen and below enlarged ears.
 
 - ref: DS1
   qty: 1
@@ -28,7 +28,7 @@
   mpn: 3.5 inch HDMI LCD touchscreen, 800x480, 5V
   footprint: HDMI + USB touch module mounting envelope
   mount: Hand/install
-  notes: Main KoalaByte Version B display in lower front face; normalized from production mismatch to 800x480.
+  notes: Main KoalaByte Version B display in lower front face.
 
 - ref: CAM1
   qty: 1
@@ -37,7 +37,25 @@
   mpn: IMX708 CSI camera module
   footprint: Camera board mount + FFC clearance
   mount: Hand/install
-  notes: Nose-pod CSI camera between the two EYE1 round LCD displays; verify Jetson CSI cable orientation.
+  notes: Camera is centered just above eyes and below ears; verify cable orientation.
+
+- ref: MIC1
+  qty: 1
+  category: Audio Input
+  manufacturer: Adafruit / SparkFun / Generic
+  mpn: I2S MEMS digital microphone module
+  footprint: Right-ear microphone module envelope + acoustic port
+  mount: Hand/install
+  notes: Inside right ear; speech input for KoalaByte AI pet voice interaction and KillerKoala wake word path.
+
+- ref: SPK1
+  qty: 1
+  category: Audio Output
+  manufacturer: Generic
+  mpn: 8 Ohm mini speaker / piezo buzzer
+  footprint: Speaker/buzzer module envelope
+  mount: Hand/install
+  notes: UI sounds, alerts, and optional AI pet voice response output; optional amplifier recommended.
 
 - ref: HUB1
   qty: 1
@@ -46,26 +64,26 @@
   mpn: Mini internal powered USB 3.0 hub
   footprint: USB hub module envelope
   mount: Hand/install
-  notes: Internal expansion for SDR, Wi-Fi, debug, and USB touch. Powered hub preferred.
+  notes: Internal expansion hub. Powered hub preferred.
 
 - ref: WIFI1
   aliases: [U_RF1]
   qty: 1
-  category: Wi-Fi/BT
+  category: Wireless
   manufacturer: MediaTek
   mpn: MT7921K M.2 Key-E or USB Wi-Fi adapter
   footprint: M.2 E-Key socket or USB adapter envelope
   mount: Hand/install
-  notes: Wi-Fi/BLE interface for authorized testing; route to external WiFi/Bluetooth antenna and validate regulatory use.
+  notes: Wireless interface; route to selected external antenna.
 
 - ref: SDR1
   qty: 1
-  category: SDR
+  category: Receiver
   manufacturer: RTL-SDR Blog / Generic
   mpn: RTL-SDR Blog V4 or RTL2832U + R820T2
   footprint: USB dongle/module envelope
   mount: Hand/install
-  notes: Receive-only SDR module; route to external SMA.
+  notes: Receiver module; route to external SMA.
 
 - ref: GPS1
   qty: 1
@@ -74,7 +92,7 @@
   mpn: NEO-M8N GPS module
   footprint: UART module/header
   mount: Hand/install
-  notes: GPS/wardriving location module; place antenna away from Jetson, battery, and high-current wiring.
+  notes: GPS location module; place antenna away from battery and high-current wiring.
 
 - ref: NFC1
   aliases: [U_RF2]
@@ -84,17 +102,17 @@
   mpn: PN532 NFC module
   footprint: I2C module/header
   mount: Hand/install
-  notes: NFC read/write/emulate support; coil remains internal inside left ear and is not an external whip antenna. Use level-safe 3.3V mode.
+  notes: Coil remains internal inside left ear and is not an external whip antenna. Use level-safe 3.3V mode.
 
 - ref: RF1
   aliases: [U_RF4]
   qty: 1
-  category: Sub-GHz
+  category: Low-power RF
   manufacturer: Ebyte / Generic
   mpn: CC1101 module
   footprint: SPI module/header
   mount: Hand/install
-  notes: Sub-GHz radio experiments; route to LoRa/Sub-GHz external antenna and obey RF law.
+  notes: Module route to selected external antenna.
 
 - ref: LORA1
   qty: 1
@@ -103,7 +121,7 @@
   mpn: SX1276/SX1278 LoRa module
   footprint: SPI module/header
   mount: Hand/install
-  notes: LoRa mesh prototype; use correct regional frequency. Share selected external LoRa/Sub-GHz antenna path only with validated RF switch/harness if required.
+  notes: Use correct regional frequency and validated antenna path.
 
 - ref: IR1
   aliases: [IR_RX1]
@@ -113,17 +131,17 @@
   mpn: VS1838B / TSOP38238 38kHz infrared receiver module
   footprint: Through-hole/module
   mount: Hand/install
-  notes: IR reader/receiver on top-of-head/front brow behind an IR-transparent window.
+  notes: Place behind an IR-transparent window.
 
 - ref: IRTX1-3
   aliases: [IR_TX1]
   qty: 3
-  category: IR TX
+  category: IR LED
   manufacturer: Vishay / Generic
-  mpn: 940nm high-output IR LED
+  mpn: 940nm IR LED
   footprint: 5mm LED
   mount: Hand/install
-  notes: IR transmitters on top-of-head/front brow adjacent to IR receiver; use Q1 transistor/MOSFET driver, not direct GPIO.
+  notes: Use Q1 transistor or MOSFET driver, not direct GPIO.
 
 - ref: Q1
   aliases: [Q_IR1]
@@ -133,16 +151,7 @@
   mpn: 2N2222 / AO3400 / 2N7002 IR LED driver
   footprint: TO-92 / SOT-23
   mount: SMT/Hand
-  notes: IR LED drive stage; add resistor sized to LED current.
-
-- ref: SPK1
-  qty: 1
-  category: Audio
-  manufacturer: Generic
-  mpn: 8 Ohm mini speaker / piezo buzzer
-  footprint: Speaker/buzzer module envelope
-  mount: Hand/install
-  notes: UI sounds and alerts; optional amplifier recommended for speaker.
+  notes: LED drive stage; add resistor sized to LED current.
 
 - ref: SW1-SW8
   qty: 8
@@ -153,42 +162,61 @@
   mount: Hand/install
   notes: F1-F6/menu/select/back controls; debounce in ESP32 firmware. J10 carries button matrix/direct GPIO.
 
-- ref: PWR1
-  aliases: [BAT1]
+- ref: BAT1
+  aliases: [PWR1]
   qty: 1
   category: Power
   manufacturer: Anker / Adafruit / Custom cell pack equivalent
-  mpn: USB-C PD power bank or 2S Li-ion pack + BMS
+  mpn: 2S2P 21700 Li-ion pack
   footprint: Module/battery bay + keyed high-current connector
   mount: Hand/install
   notes: Prototype power source; use certified cells/modules and include fuse.
 
 - ref: BMS1
   qty: 1
-  category: Power / Battery Protection
-  manufacturer: Daly / Generic equivalent
+  category: Power
+  manufacturer: Generic / Daly / JBD equivalent
   mpn: 2S Li-ion BMS with balancing and overcharge protection
-  footprint: 2S BMS module envelope with high-current wiring clearance
+  footprint: BMS module envelope with wiring clearance
   mount: Hand/install
-  notes: Required when using the 2S2P 21700 Li-ion pack option; keep wiring short, fused, and serviceable.
+  notes: Battery protection and balancing for BAT1.
 
 - ref: J_CHG
   qty: 1
   category: Power / Charging
-  manufacturer: Generic / CUI / Amphenol equivalent
+  manufacturer: Generic
   mpn: 2S Li-ion charger input, 8.4V CC/CV, 2A-4A target
-  footprint: Panel connector or keyed charging harness
+  footprint: Charge input connector / module envelope
   mount: Hand/install
   notes: Charging input must be isolated from live system rail or power-path regulation.
+
+- ref: J_USB
+  aliases: [J11]
+  qty: 1
+  category: Power / USB
+  manufacturer: Generic
+  mpn: USB-C power input / 5V main input
+  footprint: USB-C module or panel connector
+  mount: Hand/install
+  notes: Validate USB-C PD/current design before enclosure integration.
+
+- ref: J_MIC
+  qty: 1
+  category: Audio Connector
+  manufacturer: JST-GH / Molex PicoBlade equivalent
+  mpn: 6-pin right-ear microphone harness
+  footprint: 1.25mm/2.0mm keyed harness connector
+  mount: Hand/install
+  notes: Carries 3V3, GND, I2S_BCLK, I2S_LRCLK, I2S_DIN, and shield/NC between MIC1 and compute/audio interface.
 
 - ref: REG1
   qty: 1
   category: Power
   manufacturer: Pololu / DFRobot / Murata equivalent
-  mpn: 5V 10-12A synchronous buck regulator module
+  mpn: 5V 12A synchronous buck regulator module
   footprint: Buck regulator module envelope with thermal clearance
   mount: Hand/install
-  notes: Main 5V rail for Jetson + display + USB load. Minimum 10A, preferred 12A.
+  notes: Main 5V rail. Minimum 10A, preferred 12A.
 
 - ref: REG2
   qty: 1
@@ -208,16 +236,6 @@
   mount: SMT/Hand
   notes: Main input protection sized for the 10-12A power path after current testing.
 
-- ref: J_USB
-  aliases: [J11]
-  qty: 1
-  category: Power / USB-C Input
-  manufacturer: USB-C connector / PD trigger module equivalent
-  mpn: USB-C power input / 5V main input; validate PD/current design
-  footprint: USB-C connector, PD trigger, or harnessed module envelope
-  mount: SMT/Hand
-  notes: Main USB-C or 5V input path. Validate PD negotiation/current limit before tying to the system rail.
-
 - ref: J1-J14
   qty: 14
   category: Connectors
@@ -225,7 +243,7 @@
   mpn: JST-XH/PH, 2.54mm headers, SMA bulkheads
   footprint: Mixed serviceable wiring harness connectors
   mount: SMT/Hand
-  notes: Use locking connectors for handheld reliability. See device build schematics/Docs/KoalaByte_Rev0_5_VersionB_Net_Summary.txt.
+  notes: Use locking connectors for handheld reliability.
 
 - ref: SW_PWR
   qty: 1
@@ -252,7 +270,7 @@
   mpn: LoRa/Sub-GHz whip antenna, 868/915MHz or regional band as selected, SMA connector
   footprint: External SMA antenna / bulkhead mount
   mount: Hand/install
-  notes: Default external antenna 2; top/rear-center or top/rear-right service position; match antenna to selected band.
+  notes: Default external antenna 2; match antenna to selected band.
 
 - ref: ANT_SDR
   qty: 1
@@ -261,7 +279,7 @@
   mpn: SDR whip antenna / SMA-connected antenna matched to use case
   footprint: External SMA antenna / bulkhead mount
   mount: Hand/install
-  notes: Default external antenna 3; right-side SMA or rear-right SMA position for RTL-SDR receive.
+  notes: Default external antenna 3.
 
 - ref: ANT_LTE_OPT
   qty: 0
@@ -288,7 +306,7 @@
   mpn: 3D printed clamshell enclosure
   footprint: PETG/ABS/nylon Version B housing
   mount: Mechanical
-  notes: Add heat inserts and airflow.
+  notes: Add heat inserts, airflow, and right-ear acoustic port for MIC1.
 
 - ref: FAST1
   qty: 1

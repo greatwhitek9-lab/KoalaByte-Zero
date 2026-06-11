@@ -1,9 +1,9 @@
 Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
 U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
 DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
-EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Mounted above the 3.5 inch touch screen as KoalaByte dual eyes; onboard ESP32-S3 replaces standalone U2 WROOM in the production ZIP
+EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Mounted above the 3.5 inch touch screen as KoalaByte dual eyes; onboard ESP32-S3 microphone is default AI wake-word/audio front end and forwards voice events to Jetson AI runtime
 CAM1	1	Arducam	IMX708 CSI camera module	Centered camera mount above EYE1 and below enlarged ears + FFC clearance	Hand/install	Camera centered just above eyes and below ears
-MIC1	1	Adafruit / SparkFun / Generic	I2S MEMS digital microphone module	Right-ear microphone module envelope + acoustic port	Hand/install	Inside right ear; speech input for KoalaByte AI pet voice interaction and KillerKoala wake word path
+MIC1	0	Adafruit / SparkFun / Generic	Optional I2S MEMS or USB audio microphone module	Optional right-ear microphone module envelope + acoustic port	DNP unless enclosure testing requires improved voice pickup	Optional upgrade only; default KoalaByte Rev0.5 AI voice input uses EYE1 onboard ESP32-S3 microphone routed to KoalaByteCompanion.speak
 SPK1	1	Generic	8 Ohm mini speaker / piezo buzzer	Speaker/buzzer module envelope	Hand/install	UI sounds, alerts, and AI pet voice response output; optional amplifier recommended
 U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
 U_RF2	1	Elechouse/Generic	PN532 NFC module	Header/castellated module	Hand/install	I2C NFC with coil inside left ear
@@ -14,10 +14,10 @@ SDR1	1	RTL-SDR	RTL2832U + R820T2 USB SDR	USB module/adapter envelope	Hand/instal
 J_USB	1	GCT/Amphenol	USB-C power input 16-pin	USB-C receptacle	SMT	5V input; validate PD/current design
 J_HINGE	2	Molex/Amphenol	30-pin 0.5mm FFC	FFC_30P_0.5mm	SMT	Head/base interconnect
 J_LCD	1	Generic	HDMI/5V display connector or harness	HDMI/FFC clearance	SMT/Hand	Validate selected display cable orientation
-J_MIC	1	JST-GH / Molex PicoBlade equivalent	6-pin right-ear microphone harness	1.25mm/2.0mm keyed harness connector	Hand/install	Carries 3V3, GND, I2S_BCLK, I2S_LRCLK, I2S_DIN, shield/NC between MIC1 and audio/compute interface
+J_MIC	0	JST-GH / Molex PicoBlade equivalent	Optional 6-pin right-ear microphone harness	Optional 1.25mm/2.0mm keyed harness connector	DNP unless MIC1 optional external microphone is populated	Optional MIC1 harness only; default Rev0.5 uses EYE1 onboard ESP32-S3 microphone and USB/UART voice-event bridge
 BAT1	1	Custom / cell holder assembly	2S2P 21700 Li-ion pack, 7.4V nominal, 8.4V full, 74Wh target	Battery bay + keyed high-current connector	Hand/install	Internal removable/serviceable battery pack
 BMS1	1	Generic / Daly / JBD equivalent	2S Li-ion BMS, 10A continuous minimum, 15A peak preferred	BMS module envelope 45x25mm + mounting tape/standoffs	Hand/install	Cell balancing, overcharge, overdischarge protection
-REG1	1	Pololu / DFRobot / Murata equivalent	5V 12A synchronous buck regulator module	Buck regulator module envelope 50x30mm, thermal clearance	Hand/install	Converts 2S pack to regulated 5V system voltage
+REG1	1	Pololu / DFRobot / Murata equivalent	5V 10-12A synchronous buck regulator module	Buck regulator module envelope 50x30mm, thermal clearance	Hand/install	Converts 2S pack to regulated 5V system voltage
 J_BAT	1	Amass / Molex equivalent	XT30 / Micro-Fit 3.0 2-pin battery connector, 15A class	High-current 2-pin connector footprint/envelope	Hand/install	Keyed battery input connector from BMS output pack
 J_CHG	1	USB-C PD / 2S charger module	2S Li-ion charger input, 8.4V CC/CV, 2A-4A target	Charger module envelope 35x25mm	Hand/install	Charging input must be isolated from live system rail or power-path regulation
 F1	1	Littelfuse / Bel equivalent	10A resettable fuse or replaceable blade fuse	Fuse footprint/envelope	SMT/Hand	Battery output fuse between BMS and rear power switch

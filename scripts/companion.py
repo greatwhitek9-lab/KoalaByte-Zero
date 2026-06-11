@@ -22,7 +22,7 @@ except ImportError:
         # Minimal stand-in config
         @dataclass
         class CyberpetConfig:
-            DIALOGUE_IDLE: List[str] = field(default_factory=lambda: ["...Kora is silent..."])
+            DIALOGUE_IDLE: List[str] = field(default_factory=lambda: ["...Killerkoala is silent..."])
             DIALOGUE_WIFI_SCAN: List[str] = field(default_factory=lambda: ["Scanning... bah."])
             DIALOGUE_NFC: List[str] = field(default_factory=lambda: ["NFC ping."])
             DIALOGUE_LOW_BATTERY: List[str] = field(default_factory=lambda: ["Plug me in."])
@@ -112,7 +112,7 @@ class KillerKoalaCompanion:
         self.stats.mood = Mood.ACTIVE
         response = self._generate_response(action_type, xp_gained)
         if old_level < self.stats.level:
-            response += f"\n[KORA leveled up to {self.stats.level}!]"
+            response += f"\n[Killerkoala leveled up to {self.stats.level}!]"
         return xp_gained, response
 
     def _check_level_up(self):

@@ -1,16 +1,27 @@
 # KoalaByte Rev0.5 Version B Interface Shield Net Summary
-# Prototype harness board between Jetson dev kit, ESP32-S3, display, sensors, and radio modules.
+# Prototype harness board between Jetson dev kit, ESP32-S3, display, sensors, audio, and radio modules.
 
 POWER:
   +5V_MAIN: PWR_IN, LCD, USB hub, EYE1 ESP32-S3 dual 1.28in IPS eye board, optional IR LED rail
-  +3V3: ESP32-S3, PN532, GPS, LoRa, CC1101, IR receiver logic
-  GND: common ground across Jetson, ESP32-S3, display, sensors, radios
+  +3V3: ESP32-S3, PN532, GPS, LoRa, CC1101, IR receiver logic, MIC1 microphone logic
+  GND: common ground across Jetson, ESP32-S3, display, sensors, audio, radios
 
 JETSON <-> ESP32-S3:
   UART_TX_JETSON -> UART_RX_ESP32
   UART_RX_JETSON <- UART_TX_ESP32
   I2C_SDA, I2C_SCL shared for low-speed sensors where required
   GPIO_SAFE_ENABLE -> ESP32 safety/arm input
+
+AUDIO / VOICE:
+  MIC1 -> right-ear I2S MEMS microphone module for KoalaByte AI pet speech input
+  MIC1_3V3 -> +3V3 logic rail
+  MIC1_GND -> GND
+  MIC1_BCLK -> Jetson or ESP32-S3 I2S bit clock input path, final owner selected during firmware bring-up
+  MIC1_LRCLK -> Jetson or ESP32-S3 I2S word select / left-right clock input path
+  MIC1_DIN -> Jetson or ESP32-S3 I2S audio data input path
+  MIC1_SHIELD_NC -> cable shield or no-connect depending on harness type
+  SPK1 -> speaker/buzzer output for UI sounds, alerts, and optional AI pet voice response output through an amplifier
+  WAKE_WORD -> KillerKoala software wake word; speech-to-text transcript must begin with KillerKoala before voice actions route
 
 ESP32-S3 / EYE1 peripherals:
   EYE1_UART_TX/RX or USB service -> ESP32-S3 dual-eye LCD board control
@@ -38,7 +49,8 @@ EYE DISPLAY MODULE:
 
 PLACEMENT UPDATE — KOALABYTE ZERO:
   Product display name: Koalabyte Zero.
-  CAM1 -> nose pod / central front nose assembly between the two EYE1 round LCD displays.
+  CAM1 -> centered just above eyes and below enlarged ears.
+  MIC1 -> inside right ear behind acoustic port; route to J12 / J_MIC harness.
   IR_RX -> top-of-head / front brow IR-transparent window.
   IR_TX -> top-of-head / front brow IR-transparent window adjacent to IR_RX; drive through Q1 transistor/MOSFET stage.
   SW_PWR -> rear/back-mounted physical power switch; nose switch is removed.
@@ -52,7 +64,8 @@ PLACEMENT UPDATE — KOALABYTE ZERO:
 
 NORMALIZED PRODUCTION TARGET:
   DS1: 800x480 HDMI touchscreen.
-  CAM1: IMX708 CSI camera in nose pod.
-  REG1: 5V 10-12A main rail.
+  CAM1: IMX708 CSI camera centered just above eyes and below ears.
+  MIC1: right-ear I2S MEMS microphone for KillerKoala voice input.
+  REG1: 5V 12A main rail.
   F1: 10A-class protection.
   HUB1 and SPK1 retained.

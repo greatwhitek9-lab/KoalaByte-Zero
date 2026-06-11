@@ -3,6 +3,8 @@ from pathlib import Path
 import yaml
 
 from koalabyte.config import CONFIG, as_dict
+from koalabyte.main import DRIVERS
+from koalabyte.drivers.eye_display import EyeDisplayDriver
 
 
 def _structured_bom_refs():
@@ -36,6 +38,17 @@ def test_eye_config_uses_esp32_s3_dual_eye_board():
     assert "LED_L" not in bom
     assert "LED_R" not in bom
     assert bom["EYE1"]["mpn"] == CONFIG.eyes.controller
+
+
+def test_runtime_uses_eye_display_driver_not_led_ring_driver():
+    driver_names = {driver.__name__ for driver in DRIVERS}
+    assert "EyeDisplayDriver" in driver_names
+    assert "LedRingDriver" not in driver_names
+    assert EyeDisplayDriver in DRIVERS
+    result = EyeDisplayDriver(CONFIG).self_test()
+    assert result["status"] == "pass"
+    assert "EYE1" in result["detail"]
+    assert "LED_L/LED_R" in result["detail"]
 
 
 def test_camera_is_centered_above_eyes_below_ears():

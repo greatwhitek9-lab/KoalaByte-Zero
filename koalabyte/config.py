@@ -57,6 +57,25 @@ class EyeDisplayConfig:
 
 
 @dataclass(frozen=True)
+class AiBridgeConfig:
+    """Voice/AI bridge between the EYE1 ESP32-S3 board and Jetson AI runtime."""
+
+    ref: str = "EYE1_AI_BRIDGE"
+    controller_ref: str = "EYE1"
+    transport: str = "USB/UART JSONL voice_event bridge"
+    default_microphone_ref: str = "EYE1"
+    default_microphone: str = "ESP32-S3 dual-eye board onboard microphone"
+    wake_word: str = "KillerKoala"
+    transcript_route: str = (
+        "EYE1 onboard mic -> ESP32-S3 wake word/audio capture -> Jetson speech-to-text "
+        "-> KoalaByteCompanion.speak(transcript)"
+    )
+    forwards_to: str = "KoalaByteCompanion.speak"
+    requires_confirmation_for_actions: bool = True
+    lab_mode_required: bool = True
+
+
+@dataclass(frozen=True)
 class CameraConfig:
     ref: str = "CAM1"
     model: str = "IMX708"
@@ -107,11 +126,24 @@ class UsbConfig:
 class AudioConfig:
     speaker_ref: str = "SPK1"
     speaker: str = "8 Ohm mini speaker / piezo buzzer"
+    primary_microphone_ref: str = "EYE1"
+    primary_microphone: str = "ESP32-S3 dual-eye board onboard microphone"
+    primary_microphone_interface: str = "ESP32-S3 onboard audio capture path forwarded over USB/UART"
+    primary_microphone_purpose: str = "default wake-word and speech capture for KoalaByte AI pet interaction"
+    external_microphone_ref: str = "MIC1"
+    external_microphone: str = "I2S MEMS digital microphone module / USB audio microphone module"
+    external_microphone_optional: bool = True
+    external_microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
+    external_microphone_location: str = "inside right ear optional acoustic port"
+    # Backward-compatible MIC1 aliases for older tests and scripts. MIC1 stays optional/DNP
+    # on the default Rev 0.5 build; EYE1 remains the primary AI voice input.
     microphone_ref: str = "MIC1"
-    microphone: str = "I2S MEMS digital microphone module"
+    microphone: str = "I2S MEMS digital microphone module / USB audio microphone module"
     microphone_interface: str = "I2S or USB audio adapter"
     microphone_location: str = "inside right ear"
     microphone_purpose: str = "speech input for KoalaByte AI pet voice interaction"
+    microphone_optional: bool = True
+    microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
     purpose: str = "UI sounds, alerts, and voice interaction"
     optional_amp_recommended: bool = True
 
@@ -134,8 +166,8 @@ class ButtonConfig:
 
 @dataclass(frozen=True)
 class PowerConfig:
-    battery_ref: str = "BAT1"
-    battery: str = "2S2P 21700 Li-ion pack"
+    battery_ref: str = "PWR1/BAT1"
+    battery: str = "USB-C PD power bank / 2S Li-ion pack prototype supply (2S2P 21700 pack)"
     nominal_voltage_v: float = 7.4
     full_charge_voltage_v: float = 8.4
     bms_ref: str = "BMS1"
@@ -144,13 +176,13 @@ class PowerConfig:
     charger: str = "2S Li-ion charger input, 8.4V CC/CV, 2A-4A target"
     charger_notes: str = "Charging input must be isolated from live system rail or power-path regulation"
     regulator_ref: str = "REG1"
-    regulator: str = "5V 12A synchronous buck regulator module"
+    regulator: str = "5V 10-12A synchronous buck regulator module"
     regulator_min_current_a: int = 10
     regulator_preferred_current_a: int = 12
-    regulator_path: str = "BAT1 -> BMS1 -> F1 fuse -> rear switch SW_PWR -> REG1 5V system rail"
+    regulator_path: str = "PWR1/BAT1 2S pack -> BMS1 -> F1 fuse -> rear switch SW_PWR -> REG1 5V system rail"
     logic_regulator_ref: str = "REG2"
     logic_regulator: str = "3.3V 1A regulator for sensors and logic rail"
-    power_input_ref: str = "J_USB"
+    power_input_ref: str = "J_USB/J11"
     power_input: str = "USB-C power input / 5V main input; validate PD/current design"
     fuse_ref: str = "F1"
     fuse: str = "10A resettable fuse or replaceable blade fuse between BMS output and regulator"
@@ -205,13 +237,14 @@ class SafetyConfig:
 @dataclass(frozen=True)
 class KoalaByteConfig:
     version: str = "0.5.1"
-    product_name: str = "Koalabyte Zero"
-    board: str = "KoalaByte Rev 0.5 Version B"
+    product_name: str = "KoalaByte Zero"
+    board: str = "KoalaByte Zero Rev 0.5 Version B"
     main_compute: str = "NVIDIA Jetson Orin Nano Super 8GB"
     production_folder: str = "device build schematics"
     display: DisplayConfig = field(default_factory=DisplayConfig)
     eyes: EyeConfig = field(default_factory=EyeConfig)
     eye_display: EyeDisplayConfig = field(default_factory=EyeDisplayConfig)
+    ai_bridge: AiBridgeConfig = field(default_factory=AiBridgeConfig)
     camera: CameraConfig = field(default_factory=CameraConfig)
     wireless: WirelessConfig = field(default_factory=WirelessConfig)
     usb: UsbConfig = field(default_factory=UsbConfig)
@@ -235,6 +268,7 @@ def as_dict() -> Dict[str, object]:
         "display": CONFIG.display.__dict__,
         "eyes": CONFIG.eyes.__dict__,
         "eye_display": CONFIG.eye_display.__dict__,
+        "ai_bridge": CONFIG.ai_bridge.__dict__,
         "leds": CONFIG.eye_display.__dict__,
         "camera": CONFIG.camera.__dict__,
         "wireless": {

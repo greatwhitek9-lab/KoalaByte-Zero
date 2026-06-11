@@ -1,12 +1,15 @@
 """KoalaByte companion personality scaffold.
 
-This module intentionally contains safe assistant behavior only. Offensive workflows must be
-implemented as authorized-lab plugins behind the runtime safety gate.
+This module intentionally contains safe assistant behavior only. Device actions must
+remain behind the runtime safety gate and explicit user confirmation.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import Callable
+
+from .voice import VoiceInteractionEngine, VoiceResponse
 
 
 class Mood(str, Enum):
@@ -32,10 +35,11 @@ class CompanionStatus:
 class KoalaByteCompanion:
     """Small stateful companion used by the main firmware loop."""
 
-    def __init__(self) -> None:
+    def __init__(self, voice_engine: VoiceInteractionEngine | None = None) -> None:
         self.mood = Mood.READY
         self.tier = PersonalityTier.NOOB
         self.experience = 0
+        self.voice_engine = voice_engine or VoiceInteractionEngine()
 
     def boot_message(self) -> CompanionStatus:
         return CompanionStatus(
@@ -56,5 +60,17 @@ class KoalaByteCompanion:
             message=f"Experience updated: {self.experience}",
         )
 
+    def speak(
+        self,
+        transcript: str,
+        answer_provider: Callable[[str], str] | None = None,
+    ) -> VoiceResponse:
+        """Handle speech-to-text input and return an answer or safe action plan."""
+        self.mood = Mood.CURIOUS
+        response = self.voice_engine.handle_transcript(transcript, answer_provider)
+        if response.action:
+            self.mood = Mood.ALERT
+        return response
+
     def explain_guardrail(self) -> str:
-        return "Authorized lab mode only. KoalaByte will not assist unauthorized access."
+        return "Authorized lab mode only. KoalaByte requires owner approval for device actions."

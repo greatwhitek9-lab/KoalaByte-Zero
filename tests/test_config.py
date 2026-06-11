@@ -38,8 +38,20 @@ def test_eye_config_uses_esp32_s3_dual_eye_board():
     assert bom["EYE1"]["mpn"] == CONFIG.eyes.controller
 
 
+def test_camera_is_centered_above_eyes_below_ears():
+    bom = _structured_bom_by_ref()
+    assert CONFIG.camera.location == "centered just above eyes and below ears"
+    assert "centered just above eyes and below ears" in bom["CAM1"]["notes"]
+    assert "Right-eye camera" not in bom["CAM1"]["notes"]
+
+
 def test_nfc_coil_is_left_ear():
     assert CONFIG.peripherals.nfc_coil_location == "inside left ear"
+
+
+def test_button_config_has_no_nose_switch():
+    button_data = CONFIG.peripherals.buttons.__dict__
+    assert "nose_switch_gpio" not in button_data
 
 
 def test_power_config_matches_checked_in_bom():
@@ -54,7 +66,9 @@ def test_power_config_matches_checked_in_bom():
     assert CONFIG.power.regulator == "5V 12A synchronous buck regulator module"
     assert CONFIG.power.power_input_ref == "J_USB"
     assert CONFIG.power.fuse_ref == "F1"
-    assert "2S pack" in CONFIG.power.regulator_path
+    assert CONFIG.power.power_switch_ref == "SW_PWR"
+    assert CONFIG.power.power_switch_location == "back of device"
+    assert "rear switch" in CONFIG.power.regulator_path
 
 
 def test_power_config_refs_resolve_in_structured_bom():
@@ -66,6 +80,7 @@ def test_power_config_refs_resolve_in_structured_bom():
         CONFIG.power.regulator_ref,
         CONFIG.power.power_input_ref,
         CONFIG.power.fuse_ref,
+        CONFIG.power.power_switch_ref,
     }
     assert config_refs <= bom_refs
 
@@ -75,5 +90,7 @@ def test_config_serializes():
     assert data["board"] == "KoalaByte Rev 0.5 Version B"
     assert data["power"]["battery"] == "2S2P 21700 Li-ion pack"
     assert data["power"]["charger_ref"] == "J_CHG"
+    assert data["power"]["power_switch_ref"] == "SW_PWR"
+    assert data["camera"]["location"] == "centered just above eyes and below ears"
     assert data["eyes"]["ref"] == "EYE1"
     assert data["eye_display"]["legacy_ws2812_eye_rings"] is False

@@ -4,6 +4,7 @@ import yaml
 
 from koalabyte.config import CONFIG, as_dict
 from koalabyte.main import DRIVERS
+from koalabyte.drivers.ai_bridge import AiBridgeDriver
 from koalabyte.drivers.eye_display import EyeDisplayDriver
 from koalabyte.drivers.ledring import LedRingDriver
 
@@ -89,6 +90,31 @@ def test_legacy_ledring_alias_accepts_canonical_config():
     assert "LED_L/LED_R" in result["detail"]
 
 
+def test_esp32_s3_onboard_mic_is_default_ai_voice_path():
+    driver_names = {driver.__name__ for driver in DRIVERS}
+    bom = _structured_bom_by_ref()
+
+    assert "AiBridgeDriver" in driver_names
+    assert AiBridgeDriver in DRIVERS
+    assert CONFIG.ai_bridge.controller_ref == "EYE1"
+    assert CONFIG.ai_bridge.default_microphone_ref == "EYE1"
+    assert CONFIG.ai_bridge.forwards_to == "KoalaByteCompanion.speak"
+    assert CONFIG.ai_bridge.requires_confirmation_for_actions is True
+    assert CONFIG.audio.primary_microphone_ref == "EYE1"
+    assert "onboard microphone" in CONFIG.audio.primary_microphone
+    assert CONFIG.audio.external_microphone_ref == "MIC1"
+    assert CONFIG.audio.external_microphone_optional is True
+    assert "DNP" in CONFIG.audio.external_microphone_install
+    assert bom["MIC1"]["qty"] == 0
+    assert "Optional / DNP" in bom["MIC1"]["category"]
+    assert "DNP" in bom["J_MIC"]["mount"]
+
+    result = AiBridgeDriver(CONFIG).self_test()
+    assert result["status"] == "pass"
+    assert "EYE1 onboard mic" in result["detail"]
+    assert "KoalaByteCompanion.speak" in result["detail"]
+
+
 def test_camera_is_centered_above_eyes_below_ears():
     bom = _structured_bom_by_ref()
     assert CONFIG.camera.location == "centered just above eyes and below ears"
@@ -149,3 +175,6 @@ def test_config_serializes():
     assert data["camera"]["location"] == "centered just above eyes and below ears"
     assert data["eyes"]["ref"] == "EYE1"
     assert data["eye_display"]["legacy_ws2812_eye_rings"] is False
+    assert data["ai_bridge"]["default_microphone_ref"] == "EYE1"
+    assert data["audio"]["primary_microphone_ref"] == "EYE1"
+    assert data["audio"]["external_microphone_optional"] is True

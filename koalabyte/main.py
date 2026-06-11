@@ -46,6 +46,14 @@ def run_self_test() -> int:
     return 1 if failed else 0
 
 
+def run_voice_transcript(transcript: str) -> int:
+    """Handle a speech-to-text transcript through the AI pet voice router."""
+    companion = KoalaByteCompanion()
+    response = companion.speak(transcript)
+    print(json.dumps(response.__dict__, indent=2, default=str))
+    return 0
+
+
 def run_firmware() -> int:
     assert_safe_runtime()
     companion = KoalaByteCompanion()
@@ -66,6 +74,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="KoalaByte firmware runtime")
     parser.add_argument("--self-test", action="store_true", help="Run hardware/config self-test and exit")
     parser.add_argument("--print-config", action="store_true", help="Print resolved KoalaByte config and exit")
+    parser.add_argument(
+        "--voice-transcript",
+        help="Send a speech-to-text transcript to the AI pet and print its answer/action plan",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
     return parser
 
@@ -80,6 +92,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         return 0
     if args.self_test:
         return run_self_test()
+    if args.voice_transcript:
+        return run_voice_transcript(args.voice_transcript)
     return run_firmware()
 
 

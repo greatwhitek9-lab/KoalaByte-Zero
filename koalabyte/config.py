@@ -134,8 +134,8 @@ class ButtonConfig:
 
 @dataclass(frozen=True)
 class PowerConfig:
-    battery_ref: str = "BAT1"
-    battery: str = "2S2P 21700 Li-ion pack"
+    battery_ref: str = "PWR1/BAT1"
+    battery: str = "USB-C PD power bank / 2S Li-ion pack prototype supply (2S2P 21700 pack)"
     nominal_voltage_v: float = 7.4
     full_charge_voltage_v: float = 8.4
     bms_ref: str = "BMS1"
@@ -144,13 +144,13 @@ class PowerConfig:
     charger: str = "2S Li-ion charger input, 8.4V CC/CV, 2A-4A target"
     charger_notes: str = "Charging input must be isolated from live system rail or power-path regulation"
     regulator_ref: str = "REG1"
-    regulator: str = "5V 12A synchronous buck regulator module"
+    regulator: str = "5V 10-12A synchronous buck regulator module"
     regulator_min_current_a: int = 10
     regulator_preferred_current_a: int = 12
-    regulator_path: str = "BAT1 -> BMS1 -> F1 fuse -> rear switch SW_PWR -> REG1 5V system rail"
+    regulator_path: str = "PWR1/BAT1 2S pack -> BMS1 -> F1 fuse -> rear switch SW_PWR -> REG1 5V system rail"
     logic_regulator_ref: str = "REG2"
     logic_regulator: str = "3.3V 1A regulator for sensors and logic rail"
-    power_input_ref: str = "J_USB"
+    power_input_ref: str = "J_USB/J11"
     power_input: str = "USB-C power input / 5V main input; validate PD/current design"
     fuse_ref: str = "F1"
     fuse: str = "10A resettable fuse or replaceable blade fuse between BMS output and regulator"
@@ -205,8 +205,8 @@ class SafetyConfig:
 @dataclass(frozen=True)
 class KoalaByteConfig:
     version: str = "0.5.1"
-    product_name: str = "Koalabyte Zero"
-    board: str = "KoalaByte Rev 0.5 Version B"
+    product_name: str = "KoalaByte Zero"
+    board: str = "KoalaByte Zero Rev 0.5 Version B"
     main_compute: str = "NVIDIA Jetson Orin Nano Super 8GB"
     production_folder: str = "device build schematics"
     display: DisplayConfig = field(default_factory=DisplayConfig)

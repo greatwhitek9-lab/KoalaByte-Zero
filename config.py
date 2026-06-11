@@ -2,12 +2,13 @@
 
 Canonical runtime configuration lives in koalabyte/config.py. This module is kept only
 for older files that import get_hardware_config(), get_cyberpet_config(),
-get_security_config(), or get_ui_config().
+get_security_config(), or get_ui_config(). Keep normalized hardware constants aligned
+with Koalabyte Zero Rev0.5 Version B.
 """
 from dataclasses import dataclass
 
 DUAL_EYE_BOARD = "ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays"
-CAMERA_LOCATION = "centered just above eyes and below ears"
+CAMERA_LOCATION = "nose pod / central front nose assembly between the two EYE1 round LCD displays"
 REAR_POWER_SWITCH_LOCATION = "back of device"
 
 
@@ -34,9 +35,9 @@ class HardwareConfig:
     EYE_RIGHT_THEME: str = "cyber_green"
     LEGACY_WS2812_EYE_RINGS: bool = False
 
-    CAMERA_RESOLUTION: tuple = (1920, 1080)
+    CAMERA_RESOLUTION: tuple = (4608, 2592)
     CAMERA_FPS: int = 30
-    CAMERA_MODULE: str = "IMX219"
+    CAMERA_MODULE: str = "IMX708"
     CAMERA_LOCATION: str = CAMERA_LOCATION
 
     POWER_SWITCH_REF: str = "SW_PWR"
@@ -46,6 +47,23 @@ class HardwareConfig:
     BATTERY_CAPACITY_MAH: int = 10000
     BATTERY_VOLTAGE_NOMINAL: float = 7.4
     BATTERY_FAST_CHARGE_MA: int = 2000
+    MAIN_REGULATOR_REF: str = "REG1"
+    MAIN_REGULATOR_VOLTAGE: float = 5.0
+    MAIN_REGULATOR_MIN_CURRENT_A: int = 10
+    MAIN_REGULATOR_PREFERRED_CURRENT_A: int = 12
+    LOGIC_REGULATOR_REF: str = "REG2"
+    LOGIC_REGULATOR_VOLTAGE: float = 3.3
+    LOGIC_REGULATOR_CURRENT_A: int = 1
+    MAIN_FUSE_REF: str = "F1"
+    MAIN_FUSE_CLASS_A: int = 10
+
+    USB_HUB_REF: str = "HUB1"
+    USB_HUB_DESCRIPTION: str = "Mini internal powered USB 3.0 hub"
+    SPEAKER_REF: str = "SPK1"
+    SPEAKER_DESCRIPTION: str = "8 Ohm mini speaker / piezo buzzer"
+
+    DEFAULT_EXTERNAL_ANTENNAS: int = 3
+    OPTIONAL_LTE_EXTERNAL_ANTENNAS: int = 4
 
     THERMAL_WARNING_CELSIUS: int = 70
     THERMAL_THROTTLE_CELSIUS: int = 80
@@ -121,29 +139,29 @@ class CyberpetConfig:
 @dataclass
 class SecurityConfig:
     LAB_MODE_REQUIRED: bool = True
-    ALLOW_OFFENSIVE_TOOLS: bool = False
+    PASSWORD_REQUIRED: bool = True
+    SAFETY_BANNER: str = "Authorized lab use only."
 
 
 @dataclass
 class UIConfig:
-    primary_color: tuple = (128, 0, 255)
-    secondary_color: tuple = (0, 255, 0)
-    accent_color: tuple = (255, 0, 255)
-    background_color: tuple = (10, 10, 20)
-    text_color: tuple = (200, 255, 200)
+    THEME: str = "koalabyte_zero"
+    SPLASH_SCREEN: str = "Koalabyte"
+    LEFT_EYE_COLOR: tuple = (148, 0, 255)
+    RIGHT_EYE_COLOR: tuple = (0, 255, 80)
 
 
-def get_hardware_config() -> HardwareConfig:
+def get_hardware_config():
     return HardwareConfig()
 
 
-def get_cyberpet_config() -> CyberpetConfig:
+def get_cyberpet_config():
     return CyberpetConfig()
 
 
-def get_security_config() -> SecurityConfig:
+def get_security_config():
     return SecurityConfig()
 
 
-def get_ui_config() -> UIConfig:
+def get_ui_config():
     return UIConfig()

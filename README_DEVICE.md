@@ -10,7 +10,8 @@
 
 - Jetson Orin Nano Super 8GB or compatible Jetson carrier setup.
 - 3.5 inch HDMI touchscreen connected to HDMI and its touch interface.
-- ESP32-S3-DualEye-LCD-1.28 used as the dual-eye controller.
+- ESP32-S3-DualEye-LCD-1.28 used as the dual-eye controller (`EYE1`).
+- The production Rev 0.5 BOM uses the onboard ESP32-S3 in `EYE1`; there is no required standalone `U2` ESP32-S3-WROOM module.
 - IMX219/IMX708 CSI camera connected on CSI-0 and mounted centered just above the eyes and below the enlarged ears.
 - Back-mounted power on/off switch wired as `SW_PWR`.
 - PN532 NFC module with the coil placed inside the left ear.
@@ -22,7 +23,7 @@
 ```bash
 git clone https://github.com/greatwhitek9-lab/koalabyte-firmware.git
 cd koalabyte-firmware
-git checkout deployable_rev_0.5
+git checkout deployable-rev-0.5
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
@@ -107,6 +108,7 @@ The active ESP32 project lives in `esp32_mcu/`.
 - The prior nose switch has been removed from Rev 0.5.
 - The power on/off switch is now a back-mounted switch, referenced as `SW_PWR`.
 - The camera is centered just above the ESP32-S3 dual-eye board and below the enlarged ears.
+- `EYE1` is mounted above the 3.5 inch touchscreen and below the enlarged ears.
 
 ## Maintenance
 

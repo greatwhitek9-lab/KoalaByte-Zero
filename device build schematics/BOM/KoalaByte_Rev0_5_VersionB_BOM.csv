@@ -1,30 +1,35 @@
 Item,RefDes,Qty,Category,Manufacturer / Part,Description,Package / Footprint,Prototype Source Notes,Critical Notes
 1,A1,1,Compute,NVIDIA Jetson Orin Nano Super Developer Kit,Main AI/compute board,Dev kit module,Buy complete dev kit,Kept as off-the-shelf module for Rev0.5; do not custom carrier yet
-2,EYE1,1,Eye Display / MCU,"ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays",KoalaByte dual-eye display/controller board with onboard ESP32-S3 and dual 1.28inch round IPS displays,Off-board AIoT eye/display module; mount above main 3.5in screen,Waveshare-compatible / ESP32-S3 dual round LCD module,"Replaces separate legacy eye-ring concept; verify 5V/3V3 logic, UART/USB control, mounting holes, and enclosure clearance"
-3,DS1,1,Display,"Generic 3.5 in HDMI LCD Touchscreen, 800x480, 5V",Main KoalaByte Version B display,HDMI + USB touch module,Waveshare/generic,Normalized to 800x480 to match repo firmware/config target; 4.0 in variant possible only if enclosure grows slightly
-4,CAM1,1,Camera,Arducam / Raspberry Pi compatible IMX708 CSI camera module,Nose-pod CSI camera,CSI ribbon module,Raspberry Pi compatible,Place camera in the nose pod / central front nose assembly between the two EYE1 round LCD displays; verify Jetson CSI cable orientation
-5,HUB1,1,USB,Mini internal USB 3.0 hub,Internal expansion for SDR/Wi-Fi/debug,Module,Amazon/Adafruit/StarTech,Powered hub preferred
-6,WIFI1,1,Wi-Fi/BT,MediaTek MT7921K M.2 Key-E or USB Wi-Fi adapter,Wi-Fi/BLE interface for authorized testing,M.2/USB,AliExpress/Amazon,Use only lawful lab/owned networks
-7,SDR1,1,SDR,RTL-SDR Blog V4 or RTL2832U + R820T2,Receive-only SDR module,USB dongle,RTL-SDR Blog,Route to external SMA
-8,GPS1,1,GPS,u-blox NEO-M8N module,GPS/wardriving location,UART module,Amazon/AliExpress,Place antenna away from Jetson and battery
-9,NFC1,1,NFC,PN532 NFC module,NFC read/write/emulate support,I2C module,Adafruit/generic,Use level-safe 3.3 V mode
-10,RF1,1,Sub-GHz,CC1101 module,Sub-GHz radio experiments,SPI module,Ebyte/generic,External antenna; obey RF law
-11,LORA1,1,LoRa,SX1276/SX1278 LoRa module,LoRa mesh prototype,SPI module,HopeRF/generic,Use correct regional frequency
-12,IR1,1,IR Receiver,VS1838B / TSOP38238,IR receive/copy learning,Through-hole/module,Adafruit/generic,Place IR reader/receiver on top-of-head/front brow behind an IR-transparent window
-13,IRTX1-3,3,IR TX,940 nm IR LED high output,IR transmission,5 mm LED,DigiKey/Amazon,"Place IR transmitter on top-of-head/front brow adjacent to IR receiver; use transistor driver, not direct GPIO"
-14,Q1,1,Driver,2N2222 / AO3400,IR LED driver,TO-92/SOT-23,DigiKey,Add resistor sized to LED current
-15,SPK1,1,Audio,8 Ohm mini speaker / piezo buzzer,UI sounds and alerts,Module,Adafruit/Amazon,Optional amp recommended for speaker
-16,SW1-SW8,8,Controls,Tactile buttons / D-pad / side buttons,F1-F6/menu/select/power controls,Panel mount,Amazon/DigiKey,Debounce in ESP32 firmware
-17,PWR1,1,Power,USB-C PD power bank or 2S Li-ion pack + BMS,Prototype power source,Module,Anker/Adafruit,Use certified cells/modules; include fuse
-18,REG1,1,Power,5 V 10-12 A buck regulator,Main 5V rail for Jetson + display + USB load,Module,Pololu/Amazon,"Minimum 10A, preferred 12A; validate thermals and current margin under full system load"
-19,REG2,1,Power,3.3 V 1 A regulator,Sensors and logic rail,Module/SOT-223,Pololu/DigiKey,Common ground required
-20,F1,1,Protection,Resettable fuse or blade fuse 10A-class,Main input protection,PTC/inline,DigiKey,Size after current testing; aligned with upgraded 10-12A power path
-21,J1-J14,14,Connectors,"JST-XH/PH, 2.54mm headers, SMA bulkheads",Serviceable wiring harness,Mixed,DigiKey/Amazon,Use locking connectors for handheld reliability
-22,MECH1,1,Mechanical,3D printed clamshell enclosure,Version B housing,PETG/ABS/nylon print,Local print service,Add heat inserts and airflow
-23,FAST1,1,Mechanical,"M2.5/M3 screws, brass inserts, standoffs",Assembly hardware,Assorted,Amazon/McMaster,Use threadlocker where appropriate
-24,SW_PWR,1,Controls / Power,"Rear panel latching power on/off switch, >=10A DC or logic-controlled load switch",Back-mounted KoalaByte power on/off switch,Rear enclosure panel mount or harnessed switch,E-Switch / C&K / equivalent,Main disconnect or regulator-enable path; replaces nose switch concept
-ANT-1,ANT_WIFI_BT,1,Antenna,"Generic 2.4/5GHz WiFi/Bluetooth whip antenna, IPEX/SMA feed as selected",Default external antenna 1 for WiFi / Bluetooth,External antenna / bulkhead mount,DigiKey/Amazon/AliExpress,Place top/rear-left or top/rear service position; counts toward the 3 default external antennas
-ANT-2,ANT_LORA_SUBGHZ,1,Antenna,"Generic LoRa/Sub-GHz whip antenna, 868/915MHz or regional band as selected, SMA",Default external antenna 2 for LoRa / Sub-GHz,External SMA antenna / bulkhead mount,DigiKey/Amazon/AliExpress,Place top/rear-center or top/rear-right service position; match antenna to selected band
-ANT-3,ANT_SDR,1,Antenna,Generic SDR whip antenna / SMA antenna matched to use case,Default external antenna 3 for RTL-SDR receive,External SMA antenna / bulkhead mount,RTL-SDR Blog / DigiKey / Amazon,Place on right-side SMA or rear-right SMA position; counts toward the 3 default external antennas
-ANT-4,ANT_LTE_OPT,0,Antenna / Optional,Optional cellular / 4G LTE antenna,Optional 4th external antenna for LTE build only,External LTE antenna / bulkhead mount,DNP unless LTE module is installed,Do not populate on default Koalabyte Zero build; only LTE variant has 4 external antennas
-ANT-GPS,ANT_GPS_PATCH,1,Antenna,Active ceramic GPS patch antenna,GPS active patch antenna,Patch antenna module/envelope,u-blox compatible active patch antenna,Mount on top/rear deck with sky-facing clearance; not counted as external whip antenna
+2,EYE1,1,Eye Display / MCU,"ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays",KoalaByte dual-eye display/controller board with onboard ESP32-S3 and dual 1.28inch round IPS displays,Off-board AIoT eye/display module; mount above main 3.5in screen,Waveshare-compatible / ESP32-S3 dual round LCD module,"Verify 5V/3V3 logic, UART/USB control, mounting holes, and enclosure clearance"
+3,DS1,1,Display,"Generic 3.5 in HDMI LCD Touchscreen, 800x480, 5V",Main KoalaByte Version B display,HDMI + USB touch module,Waveshare/generic,Normalized to 800x480 to match repo firmware/config target
+4,CAM1,1,Camera,Arducam / Raspberry Pi compatible IMX708 CSI camera module,Centered CSI camera,CSI ribbon module,Raspberry Pi compatible,Place camera centered just above eyes and below ears; verify Jetson CSI cable orientation
+5,MIC1,1,Audio Input,Adafruit / SparkFun / Generic I2S MEMS digital microphone module,Right-ear microphone for voice-to-AI-pet input,Right-ear microphone module envelope + acoustic port,Adafruit/SparkFun/generic,"Mount inside right ear; route to J_MIC; used for KillerKoala wake word and speech input"
+6,SPK1,1,Audio Output,8 Ohm mini speaker / piezo buzzer,UI sounds alerts and optional AI pet voice response,Speaker/buzzer module,Adafruit/Amazon,Optional amp recommended for speaker
+7,J_MIC,1,Audio Connector,JST-GH / Molex PicoBlade 6-pin right-ear microphone harness,MIC1 I2S microphone harness connector,1.25mm/2.0mm keyed harness connector,DigiKey/Amazon,"Signals: 3V3 GND I2S_BCLK I2S_LRCLK I2S_DIN SHIELD/NC"
+8,HUB1,1,USB,Mini internal USB 3.0 hub,Internal expansion for SDR/Wi-Fi/debug,Module,Amazon/Adafruit/StarTech,Powered hub preferred
+9,WIFI1,1,Wi-Fi/BT,MediaTek MT7921K M.2 Key-E or USB Wi-Fi adapter,Wi-Fi/BLE interface,M.2/USB,AliExpress/Amazon,Route to selected antenna
+10,SDR1,1,SDR,RTL-SDR Blog V4 or RTL2832U + R820T2,Receive-only SDR module,USB dongle,RTL-SDR Blog,Route to external SMA
+11,GPS1,1,GPS,u-blox NEO-M8N module,GPS location,UART module,Amazon/AliExpress,Place antenna away from Jetson and battery
+12,NFC1,1,NFC,PN532 NFC module,NFC module with left-ear coil,I2C module,Adafruit/generic,Use level-safe 3.3 V mode
+13,RF1,1,Low-power RF,CC1101 module,Low-power radio module,SPI module,Ebyte/generic,External antenna; obey RF law
+14,LORA1,1,LoRa,SX1276/SX1278 LoRa module,LoRa mesh prototype,SPI module,HopeRF/generic,Use correct regional frequency
+15,IR1,1,IR Receiver,VS1838B / TSOP38238,IR receive,Through-hole/module,Adafruit/generic,Place on top-of-head/front brow behind IR-transparent window
+16,IRTX1-3,3,IR TX,940 nm IR LED high output,IR transmission,5 mm LED,DigiKey/Amazon,"Use transistor driver, not direct GPIO"
+17,Q1,1,Driver,2N2222 / AO3400,IR LED driver,TO-92/SOT-23,DigiKey,Add resistor sized to LED current
+18,SW1-SW8,8,Controls,Tactile buttons / D-pad / side buttons,F1-F6/menu/select/power controls,Panel mount,Amazon/DigiKey,Debounce in ESP32 firmware
+19,BAT1,1,Power,2S2P 21700 Li-ion pack,Prototype power source,Module/battery bay,Anker/Adafruit/custom,Use certified cells/modules; include fuse
+20,BMS1,1,Power,2S Li-ion BMS with balancing and overcharge protection,Battery protection module,Module,Generic/Daly/JBD,Keep wiring short and fused
+21,J_CHG,1,Power / Charging,"2S Li-ion charger input, 8.4V CC/CV, 2A-4A target",Charging input,Connector/module,Generic,Isolate from live system rail or use power-path regulation
+22,J_USB,1,Power / USB,USB-C power input / 5V main input,USB-C power input,Panel/module,Generic,Validate PD/current design
+23,REG1,1,Power,5V 12A synchronous buck regulator module,Main 5V rail for Jetson + display + USB load,Module,Pololu/Amazon,Validate thermals and current margin under full system load
+24,REG2,1,Power,3.3 V 1 A regulator,Sensors and logic rail,Module/SOT-223,Pololu/DigiKey,Common ground required
+25,F1,1,Protection,Resettable fuse or blade fuse 10A-class,Main input protection,PTC/inline,DigiKey,Size after current testing
+26,J1-J14,14,Connectors,"JST-XH/PH, 2.54mm headers, SMA bulkheads",Serviceable wiring harness,Mixed,DigiKey/Amazon,Use locking connectors for handheld reliability
+27,SW_PWR,1,Controls / Power,"Rear panel latching power on/off switch, >=10A DC or logic-controlled load switch",Back-mounted power switch,Rear enclosure panel mount or harnessed switch,E-Switch/C&K/equivalent,Main disconnect or regulator-enable path
+28,ANT_WIFI_BT,1,Antenna,"Generic 2.4/5GHz WiFi/Bluetooth whip antenna, IPEX/SMA feed as selected",Default external antenna 1,External antenna / bulkhead mount,DigiKey/Amazon,Top/rear-left or top/rear service position
+29,ANT_LORA_SUBGHZ,1,Antenna,"Generic LoRa/Sub-GHz whip antenna, 868/915MHz or regional band as selected, SMA",Default external antenna 2,External SMA antenna / bulkhead mount,DigiKey/Amazon,Match antenna to selected band
+30,ANT_SDR,1,Antenna,Generic SDR whip antenna / SMA antenna matched to use case,Default external antenna 3,External SMA antenna / bulkhead mount,RTL-SDR Blog/DigiKey/Amazon,Right-side SMA or rear-right SMA position
+31,ANT_LTE_OPT,0,Antenna / Optional,Optional cellular / 4G LTE antenna,Optional 4th external antenna for LTE build only,External LTE antenna / bulkhead mount,DNP unless LTE module is installed,Only LTE variant has 4 external antennas
+32,ANT_GPS_PATCH,1,Antenna,Active ceramic GPS patch antenna,GPS active patch antenna,Patch antenna module/envelope,u-blox compatible active patch antenna,Mount on top/rear deck with sky-facing clearance
+33,MECH1,1,Mechanical,3D printed clamshell enclosure,Version B housing with MIC1 acoustic port,PETG/ABS/nylon print,Local print service,Add heat inserts airflow and right-ear microphone port
+34,FAST1,1,Mechanical,"M2.5/M3 screws, brass inserts, standoffs",Assembly hardware,Assorted,Amazon/McMaster,Use threadlocker where appropriate

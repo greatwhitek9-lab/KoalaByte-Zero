@@ -1,0 +1,20 @@
+Ref,Val,Package,PosX_mm,PosY_mm,Rot_deg,Side,Notes
+J1,JETSON_UART_GPIO,Conn_02x20_2.54mm,18.00,20.00,0,Top,Header to Jetson GPIO/UART/I2C/SPI
+J2,EYE1_ESP32S3_DUAL_LCD_IO,Conn_02x19_2.54mm,82.00,24.00,0,Top,Harness for ESP32-S3 Double Eye Round LCD AIoT board UART/GPIO/service
+J3,HDMI_LCD_800x480_PWR_TOUCH,Conn_01x06_2.54mm,58.00,9.00,0,Top,LCD 5V/GND/USB touch break-in for normalized 800x480 display target
+J4,PN532_I2C,Conn_01x04_2.54mm,15.00,52.00,0,Top,"3V3,GND,SDA,SCL"
+J5,GPS_UART,Conn_01x04_2.54mm,31.00,52.00,0,Top,"3V3,GND,TX,RX"
+J6,IR_RX_TX,Conn_01x05_2.54mm,47.00,52.00,0,Top,"3V3,GND,IR_RX,IR_TX,VLED"
+J7,LORA_SPI,Conn_01x08_2.54mm,66.00,52.00,0,Top,SPI + IRQ/RST
+J8,CC1101_SPI,Conn_01x08_2.54mm,91.00,52.00,0,Top,SPI + GDO lines
+J9,LEGACY_EYE_DNP,Conn_01x03_2.54mm,108.00,15.00,90,Top,DNP legacy eye connector; Rev0.5 uses EYE1 ESP32-S3 dual 1.28in IPS display board
+J10,BUTTONS,Conn_01x10_2.54mm,108.00,36.00,90,Top,Button matrix / direct GPIO
+J11,PWR_IN_5V,JST_VH_2,10.00,72.00,0,Top,5V main input
+REG2,3V3_REG,SOT-223-3,28.00,72.00,0,Top,Optional local 3.3V regulator
+F1,10A_MAIN_FUSE,Fuse_1812,45.00,72.00,0,Top,Main rail protection sized for 10-12A power path; validate during current testing
+Q1,IR_DRV,SOT-23,62.00,72.00,0,Top,IR LED driver
+R1,220R,R_0805,70.00,72.00,0,Top,DNP if no legacy LED-ring chain is fitted; legacy eye LED data resistor
+R2,100R,R_0805,78.00,72.00,0,Top,IR base/gate resistor
+C1,10uF,C_0805,86.00,72.00,0,Top,3V3 decoupling
+C2,1000uF,CP_Radial_D8,98.00,72.00,0,Top,Optional bulk capacitance for 5V rail; not dedicated to legacy eyes in current Rev0.5
+SW_PWR,REAR_POWER_SWITCH,Panel_Switch_Harness,112.00,72.00,90,Top,Rear/back-mounted power switch harness or regulator-enable control; not a PCB-mounted front/nose switch

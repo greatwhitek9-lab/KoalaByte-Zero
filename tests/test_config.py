@@ -22,6 +22,11 @@ def _structured_bom_by_ref():
     return {item["ref"]: item for item in bom}
 
 
+def _tab_bom_text():
+    bom_path = Path(__file__).resolve().parents[1] / "docs" / "BOM"
+    return bom_path.read_text(encoding="utf-8")
+
+
 def test_display_target_is_hdmi_800x480():
     assert CONFIG.display.interface == "HDMI"
     assert CONFIG.display.width == 800
@@ -38,7 +43,19 @@ def test_eye_config_uses_esp32_s3_dual_eye_board():
     assert "EYE1" in bom
     assert "LED_L" not in bom
     assert "LED_R" not in bom
+    assert "U2" not in bom
     assert bom["EYE1"]["mpn"] == CONFIG.eyes.controller
+
+
+def test_production_bom_does_not_include_standalone_esp32_wroom():
+    bom_refs = _structured_bom_refs()
+    bom_text = _tab_bom_text()
+    assert "U2" not in bom_refs
+    assert "ESP32-S3-WROOM" not in bom_text
+    assert "ESP32-S3-WROOM" not in "\n".join(
+        f"{item['ref']} {item.get('mpn', '')} {item.get('notes', '')}"
+        for item in _structured_bom_by_ref().values()
+    )
 
 
 def test_runtime_uses_eye_display_driver_not_led_ring_driver():

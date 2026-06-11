@@ -23,15 +23,7 @@
   mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
   footprint: Dual round LCD eye board panel mount + USB/UART clearance
   mount: Hand/install
-  notes: Mounted above the 3.5 inch touch screen as KoalaByte dual eyes
-
-- ref: U2
-  qty: 1
-  manufacturer: Espressif
-  mpn: ESP32-S3-WROOM-1-N16R8
-  footprint: ESP32-S3 WROOM module footprint
-  mount: SMT
-  notes: Auxiliary MCU for UI/buttons/safety interlock if not integrated into EYE1
+  notes: Mounted above the 3.5 inch touch screen as KoalaByte dual eyes; onboard ESP32-S3 replaces standalone U2 WROOM in the production ZIP
 
 - ref: CAM1
   qty: 1

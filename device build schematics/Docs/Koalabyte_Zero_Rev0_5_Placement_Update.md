@@ -6,16 +6,24 @@ This document records the normalized repo-aligned placement truth for Koalabyte 
 
 - Product display name: **Koalabyte Zero**
 - Hardware baseline: **KoalaByte Rev0.5 Version B**
-- Primary layout: rugged koala-style handheld with enlarged ears, 3.5 inch 800x480 HDMI touchscreen, ESP32-S3 dual-eye LCD board, left-side D-pad, right-side F buttons, rear-mounted power switch, internal modular radios, and three default external antennas.
+- Primary layout: rugged koala-style handheld with enlarged ears, 3.5 inch 800x480 HDMI touchscreen, ESP32-S3 dual-eye LCD board, right-ear microphone, left-side D-pad, right-side F buttons, rear-mounted power switch, internal modular radios, and three default external antennas.
 
 ## Front placement
 
 - **Main display:** DS1 3.5 inch HDMI touchscreen, normalized to **800x480**, mounted in the lower front face.
 - **Eye assembly:** EYE1 ESP32-S3 1.28 inch Double Eye Round LCD AIoT board mounted above the main screen and below the enlarged ears.
-- **Camera:** CAM1 **IMX708 CSI** camera moved into the central nose pod/front nose assembly between the two round EYE1 displays.
+- **Camera:** CAM1 **IMX708 CSI** camera centered just above the eyes and below the enlarged ears.
 - **D-pad:** front lower-left, matching the Version B enclosure reference.
 - **Function buttons:** F1, F2, and F3 stacked vertically on the front lower-right side. J10/SW1-SW8 covers the full control group.
 - **Power switch:** SW_PWR is not a front or nose button. Use SW_PWR as a rear/back-mounted physical power on/off switch or regulator-enable control.
+
+## Ear placement
+
+- **Left ear:** NFC coil remains internal inside the left ear.
+- **Right ear:** MIC1 I2S MEMS digital microphone mounts inside the right ear behind a small acoustic port.
+- **Voice path:** MIC1 feeds the KoalaByte AI pet speech-input path and KillerKoala wake-word interaction.
+- **Microphone harness:** Route MIC1 through J12 / J_MIC with `3V3`, `GND`, `I2S_BCLK`, `I2S_LRCLK`, `I2S_DIN`, and `SHIELD/NC`.
+- Keep the MIC1 harness away from high-current regulator/battery wiring and RF feedlines.
 
 ## Top/head placement
 
@@ -41,12 +49,9 @@ Non-whip antenna rules:
 
 ## Power and internal modules
 
-- **REG1:** normalized to 5V 10-12A main rail for Jetson + display + USB load.
+- **REG1:** normalized to 5V 12A main rail for Jetson + display + USB load.
 - **F1:** normalized to 10A-class protection after current testing.
-- **REG2:** retained as 3.3V 1A logic/sensor rail.
+- **REG2:** retained as 3.3V 1A logic/sensor/audio rail.
 - **HUB1:** retained as powered internal USB 3.0 hub for SDR, Wi-Fi, debug, and touch expansion.
-- **SPK1:** retained as speaker/buzzer for UI sounds and alerts.
-
-## Notes for renders and production artwork
-
-Every angle should show the same physical truth: 3 external antennas by default, rear-mounted SW_PWR, CAM1 IMX708 camera in the nose, IR RX/TX on top of the head, EYE1 dual LCD eyes above the 800x480 main screen, internal NFC coil in the left ear, GPS patch on the top/rear deck, and optional LTE only as a separate variant/callout.
+- **SPK1:** retained as speaker/buzzer for UI sounds, alerts, and optional AI pet voice output.
+- **MIC1:** right-ear microphone for voice-to-AI-pet input; validate acoustic port, enclosure damping, and wake-word capture.

@@ -126,6 +126,15 @@ class UsbConfig:
 class AudioConfig:
     speaker_ref: str = "SPK1"
     speaker: str = "8 Ohm mini speaker / piezo buzzer"
+    # Stable MIC1 alias required by older tests/scripts. MIC1 is optional/DNP on
+    # the default Rev 0.5 build; EYE1 remains the primary AI voice input.
+    microphone_ref: str = "MIC1"
+    microphone: str = "I2S MEMS digital microphone module / USB audio microphone module"
+    microphone_interface: str = "I2S or USB audio adapter"
+    microphone_location: str = "inside right ear"
+    microphone_purpose: str = "speech input for KoalaByte AI pet voice interaction"
+    microphone_optional: bool = True
+    microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
     primary_microphone_ref: str = "EYE1"
     primary_microphone: str = "ESP32-S3 dual-eye board onboard microphone"
     primary_microphone_interface: str = "ESP32-S3 onboard audio capture path forwarded over USB/UART"
@@ -135,15 +144,6 @@ class AudioConfig:
     external_microphone_optional: bool = True
     external_microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
     external_microphone_location: str = "inside right ear optional acoustic port"
-    # Backward-compatible MIC1 aliases for older tests and scripts. MIC1 stays optional/DNP
-    # on the default Rev 0.5 build; EYE1 remains the primary AI voice input.
-    microphone_ref: str = "MIC1"
-    microphone: str = "I2S MEMS digital microphone module / USB audio microphone module"
-    microphone_interface: str = "I2S or USB audio adapter"
-    microphone_location: str = "inside right ear"
-    microphone_purpose: str = "speech input for KoalaByte AI pet voice interaction"
-    microphone_optional: bool = True
-    microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
     purpose: str = "UI sounds, alerts, and voice interaction"
     optional_amp_recommended: bool = True
 

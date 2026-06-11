@@ -1,6 +1,6 @@
-# BOM for Koalabyte Zero Rev 0.5 Version B firmware + production starter package
+# BOM for KoalaByte Zero Rev 0.5 Version B firmware + production starter package
 # Keep aligned with koalabyte/config.py and device build schematics/.
-# Normalized production target includes MIC1 right-ear voice microphone for the AI pet.
+# Default AI voice path uses the EYE1 ESP32-S3 onboard microphone; MIC1/J_MIC are optional DNP upgrades.
 
 - ref: A1
   aliases: [U1]
@@ -14,12 +14,12 @@
 
 - ref: EYE1
   qty: 1
-  category: Eye Display / MCU
+  category: Eye Display / MCU / AI Voice Front End
   manufacturer: ESP32-S3 AIoT display module
   mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
   footprint: Dual round LCD eye board panel mount + USB/UART clearance
   mount: Hand/install
-  notes: KoalaByte dual-eye display/controller board above the 3.5 inch main screen and below enlarged ears.
+  notes: KoalaByte dual-eye display/controller board above the 3.5 inch main screen and below enlarged ears. Onboard ESP32-S3 microphone is the default wake-word/audio front end and forwards voice events to the Jetson AI runtime.
 
 - ref: DS1
   qty: 1
@@ -40,13 +40,13 @@
   notes: Camera is centered just above eyes and below ears; verify cable orientation.
 
 - ref: MIC1
-  qty: 1
-  category: Audio Input
+  qty: 0
+  category: Audio Input / Optional / DNP
   manufacturer: Adafruit / SparkFun / Generic
-  mpn: I2S MEMS digital microphone module
-  footprint: Right-ear microphone module envelope + acoustic port
-  mount: Hand/install
-  notes: Inside right ear; speech input for KoalaByte AI pet voice interaction and KillerKoala wake word path.
+  mpn: I2S MEMS digital microphone module or USB audio microphone module
+  footprint: Optional right-ear microphone module envelope + acoustic port
+  mount: DNP unless enclosure voice testing requires improved external pickup
+  notes: Optional right-ear upgrade only. Default Rev0.5 AI voice input uses the EYE1 ESP32-S3 dual-eye board onboard microphone routed to KoalaByteCompanion.speak.
 
 - ref: SPK1
   qty: 1
@@ -201,19 +201,19 @@
   notes: Validate USB-C PD/current design before enclosure integration.
 
 - ref: J_MIC
-  qty: 1
-  category: Audio Connector
+  qty: 0
+  category: Audio Connector / Optional / DNP
   manufacturer: JST-GH / Molex PicoBlade equivalent
-  mpn: 6-pin right-ear microphone harness
-  footprint: 1.25mm/2.0mm keyed harness connector
-  mount: Hand/install
-  notes: Carries 3V3, GND, I2S_BCLK, I2S_LRCLK, I2S_DIN, and shield/NC between MIC1 and compute/audio interface.
+  mpn: 6-pin optional right-ear microphone harness
+  footprint: Optional 1.25mm/2.0mm keyed harness connector
+  mount: DNP unless MIC1 optional external microphone is populated
+  notes: Optional MIC1 harness only. Default Rev0.5 uses the EYE1 onboard ESP32-S3 microphone and USB/UART voice-event bridge.
 
 - ref: REG1
   qty: 1
   category: Power
   manufacturer: Pololu / DFRobot / Murata equivalent
-  mpn: 5V 12A synchronous buck regulator module
+  mpn: 5V 10-12A synchronous buck regulator module
   footprint: Buck regulator module envelope with thermal clearance
   mount: Hand/install
   notes: Main 5V rail. Minimum 10A, preferred 12A.
@@ -306,7 +306,7 @@
   mpn: 3D printed clamshell enclosure
   footprint: PETG/ABS/nylon Version B housing
   mount: Mechanical
-  notes: Add heat inserts, airflow, and right-ear acoustic port for MIC1.
+  notes: Add heat inserts and airflow. Right-ear acoustic port is optional only if MIC1 is populated after voice pickup testing.
 
 - ref: FAST1
   qty: 1

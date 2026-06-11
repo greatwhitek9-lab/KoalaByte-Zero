@@ -10,7 +10,7 @@ from typing import Iterable
 from .config import CONFIG, as_dict
 from .cyberpet_ai import KoalaByteCompanion
 from .safety import assert_safe_runtime
-from .drivers import battery, camera, display, eye_display, gps, ir, nfc, sdr, subghz, wireless
+from .drivers import ai_bridge, battery, camera, display, eye_display, gps, ir, nfc, sdr, subghz, wireless
 
 LOG = logging.getLogger("koalabyte")
 
@@ -18,6 +18,7 @@ DRIVERS = [
     display.DisplayDriver,
     camera.CameraDriver,
     eye_display.EyeDisplayDriver,
+    ai_bridge.AiBridgeDriver,
     battery.BatteryDriver,
     wireless.WirelessDriver,
     nfc.NfcDriver,

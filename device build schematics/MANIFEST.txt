@@ -16,14 +16,17 @@ Mechanical/MECHANICAL_STARTER_NOTES.md
 
 NORMALIZED UPDATE:
 - DS1 display is 3.5 inch HDMI touchscreen, 800x480, 5V.
-- CAM1 camera is IMX708 CSI and is placed in the nose pod / central front nose assembly.
-- REG1 is upgraded to a 5V 10-12A main regulator path.
+- CAM1 camera is IMX708 and is centered just above eyes and below enlarged ears.
+- MIC1 is an I2S MEMS digital microphone module mounted inside the right ear.
+- MIC1 is the speech input path for the KoalaByte AI pet voice interaction and KillerKoala wake word.
+- J12 / J_MIC is the right-ear microphone harness carrying 3V3, GND, I2S_BCLK, I2S_LRCLK, I2S_DIN, SHIELD/NC.
+- SPK1 speaker/buzzer UI alert component is retained for sounds and optional AI pet voice response output.
+- REG1 is upgraded to a 5V 12A main regulator path.
 - F1 is upgraded to 10A-class input protection.
 - REG2 3.3V 1A logic regulator is retained.
 - HUB1 powered internal USB 3.0 hub is retained.
-- SPK1 speaker/buzzer UI alert component is retained.
 - SW_PWR is corrected as a rear/back-mounted power switch and removed as a malformed pick-and-place/BOM row.
 - Default build uses 3 external antennas; optional LTE fourth antenna is DNP unless LTE variant is built.
 
 IMPORTANT:
-These are prototype interface-shield/harness-board starter files, not manufacturer-verified final production files. Run ERC/DRC, connector pin validation, current/thermal testing, enclosure validation, RF review, and at least one physical test spin before ordering boards.
+These are prototype interface-shield/harness-board starter files, not manufacturer-verified final production files. Run ERC/DRC, connector pin validation, current/thermal testing, enclosure validation, acoustic-port validation, audio capture testing, RF review, and at least one physical test spin before ordering boards.

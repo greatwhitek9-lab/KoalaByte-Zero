@@ -1,10 +1,13 @@
-"""KoalaByte configuration.
+"""Legacy compatibility configuration for older KoalaByte scripts.
 
-This file provides get_hardware_config, get_cyberpet_config, get_security_config, get_ui_config
-and is intentionally aligned with the original firmware config. Per request, the cyberpet XP rewards
-include the previously-present action entries.
+Canonical runtime configuration lives in koalabyte/config.py. This module is kept only
+for older files that import get_hardware_config(), get_cyberpet_config(),
+get_security_config(), or get_ui_config().
 """
 from dataclasses import dataclass
+
+DUAL_EYE_BOARD = "ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays"
+
 
 @dataclass
 class HardwareConfig:
@@ -12,29 +15,26 @@ class HardwareConfig:
     JETSON_RAM_GB: int = 8
     JETSON_STORAGE_GB: int = 64
 
-    ESP32_VARIANT: str = "ESP32-S3-DualEye-LCD-1.28"
-    UART_BAUDRATE: int = 115200
+    ESP32_VARIANT: str = "ESP32-S3"
+    EYE_BOARD_REF: str = "EYE1"
+    EYE_BOARD_MODULE: str = DUAL_EYE_BOARD
+    EYE_BOARD_INTERFACE: str = "USB/UART"
+    UART_BAUDRATE: int = 921600
 
-    DISPLAY_WIDTH: int = 240  # Updated for ESP32-S3-DualEye-LCD-1.28
-    DISPLAY_HEIGHT: int = 240
+    DISPLAY_WIDTH: int = 800
+    DISPLAY_HEIGHT: int = 480
     DISPLAY_DPI: int = 140
-    DISPLAY_INTERFACE: str = "SPI"
+    DISPLAY_INTERFACE: str = "HDMI"
+
+    EYE_DISPLAY_DIAMETER_IN: float = 1.28
+    EYE_DISPLAY_TYPE: str = "Dual round IPS LCD"
+    EYE_LEFT_THEME: str = "ultraviolet"
+    EYE_RIGHT_THEME: str = "cyber_green"
+    LEGACY_WS2812_EYE_RINGS: bool = False
 
     CAMERA_RESOLUTION: tuple = (1920, 1080)
     CAMERA_FPS: int = 30
     CAMERA_MODULE: str = "IMX219"
-
-    # Backwards-compatible LED_* constants kept for scripts/tests that still reference them
-    LED_COUNT_PER_RING: int = 16
-    LED_LEFT_COLOR: tuple = (255, 0, 0)
-    LED_RIGHT_COLOR: tuple = (0, 255, 255)
-    LED_NOSE_COLOR: tuple = (255, 255, 255)
-
-    # New eye/display specific constants
-    EYE_PIXELS_PER_DISPLAY: int = 16
-    EYE_LEFT_COLOR: tuple = (148, 0, 255)
-    EYE_RIGHT_COLOR: tuple = (0, 255, 80)
-    EYE_BRIGHTNESS: float = 0.35
 
     BATTERY_CAPACITY_MAH: int = 10000
     BATTERY_VOLTAGE_NOMINAL: float = 7.4
@@ -55,10 +55,11 @@ class HardwareConfig:
                 "F2": {"function": "BLE Discovery", "gpio": 27},
                 "F3": {"function": "IR Learn/Transmit", "gpio": 22},
                 "F4": {"function": "NFC/RFID", "gpio": 23},
-                "F5": {"function": "Attack Mode", "gpio": 24},
+                "F5": {"function": "Lab Tools", "gpio": 24},
                 "F6": {"function": "Settings", "gpio": 25},
                 "POWER": {"function": "Power Toggle", "gpio": 4},
             }
+
 
 @dataclass
 class CyberpetConfig:
@@ -73,7 +74,6 @@ class CyberpetConfig:
     MOODS: dict = None
     PERSONALITY_TIERS: dict = None
     XP_REWARDS: dict = None
-
     DIALOGUE_IDLE: list = None
     DIALOGUE_WIFI_SCAN: list = None
 
@@ -83,7 +83,6 @@ class CyberpetConfig:
                 "idle": {"color": (100, 100, 100), "description": "Waiting for action"},
                 "active": {"color": (200, 200, 0), "description": "Executing scan"},
                 "hungry": {"color": (255, 100, 0), "description": "Battery low"},
-                "aggressive": {"color": (255, 0, 0), "description": "Attack mode"},
                 "legendary": {"color": (255, 0, 255), "description": "Elite status"},
             }
         if self.PERSONALITY_TIERS is None:
@@ -94,29 +93,29 @@ class CyberpetConfig:
                 "legend": (51, 100),
             }
         if self.XP_REWARDS is None:
-            # Restored original action rewards per user request
             self.XP_REWARDS = {
                 "wifi_scan": 10,
                 "ble_discovery": 15,
                 "ir_transmit": 8,
-                "nfc_clone": 20,
-                "exploit_execute": 50,
+                "nfc_read": 20,
                 "new_target_type": 100,
             }
         if self.DIALOGUE_IDLE is None:
             self.DIALOGUE_IDLE = [
-                "What, no targets? I could crack a bank with my eyes closed.",
-                "C'mon, choom. Give me something to do.",
+                "KoalaByte idle. Waiting on an authorized lab task.",
+                "Dual eyes online. Systems green.",
             ]
         if self.DIALOGUE_WIFI_SCAN is None:
             self.DIALOGUE_WIFI_SCAN = [
-                "WiFi signals detected. Time to "
+                "WiFi signals detected. Passive lab scan ready."
             ]
+
 
 @dataclass
 class SecurityConfig:
     LAB_MODE_REQUIRED: bool = True
-    ALLOW_OFFENSIVE_TOOLS: bool = True
+    ALLOW_OFFENSIVE_TOOLS: bool = False
+
 
 @dataclass
 class UIConfig:
@@ -126,16 +125,18 @@ class UIConfig:
     background_color: tuple = (10, 10, 20)
     text_color: tuple = (200, 255, 200)
 
-# Getter functions used by firmware.py
 
 def get_hardware_config() -> HardwareConfig:
     return HardwareConfig()
 
+
 def get_cyberpet_config() -> CyberpetConfig:
     return CyberpetConfig()
 
+
 def get_security_config() -> SecurityConfig:
     return SecurityConfig()
+
 
 def get_ui_config() -> UIConfig:
     return UIConfig()

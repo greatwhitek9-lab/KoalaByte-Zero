@@ -1,10 +1,9 @@
 Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
 U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
 DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
-U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/LED/safety interlock
+EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Replaces separate LED_L/LED_R WS2812 eye rings; mounted above the 3.5 inch touch screen as KoalaByte dual eyes
+U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/LED/safety interlock if not integrated into EYE1
 CAM1	1	Arducam	IMX708 CSI camera module	Camera board mount + FFC clearance	Hand/install	Right-eye camera
-LED_L	1	Espressif	ESP32-S3 1.28-inch Dual LCD AIoT Board	Panel mount	Hand/install	Left-side LCD for dual-eye system
-LED_R	1	Espressif	ESP32-S3 1.28-inch Dual LCD AIoT Board	Panel mount	Hand/install	Right-side LCD for dual-eye system
 U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
 U_RF2	1	Elechouse/Generic	PN532 NFC module	Header/castellated module	Hand/install	I2C NFC
 U_RF3	1	Raytac/Adafruit	nRF52840 module	Header/castellated module	Hand/install	BLE coprocessor
@@ -17,3 +16,17 @@ J_LCD	1	Generic	HDMI/5V display connector or harness	HDMI/FFC clearance	SMT/Hand
 BAT1	1	Custom / cell holder assembly	2S2P 21700 Li-ion pack, 7.4V nominal, 8.4V full, 74Wh target	Battery bay + keyed high-current connector	Hand/install	Internal removable/serviceable battery pack
 BMS1	1	Generic / Daly / JBD equivalent	2S Li-ion BMS, 10A continuous minimum, 15A peak preferred	BMS module envelope 45x25mm + mounting tape/standoffs	Hand/install	Cell balancing, overcharge, overdischarge protection
 REG1	1	Pololu / DFRobot / Murata equivalent	5V 12A synchronous buck regulator module	Buck regulator module envelope 50x30mm, thermal clearance	Hand/install	Converts 2S pack to regulated 5V system voltage
+J_BAT	1	Amass / Molex equivalent	XT30 / Micro-Fit 3.0 2-pin battery connector, 15A class	High-current 2-pin connector footprint/envelope	Hand/install	Keyed battery input connector from BMS output pack
+J_CHG	1	USB-C PD / 2S charger module	2S Li-ion charger input, 8.4V CC/CV, 2A-4A target	Charger module envelope 35x25mm	Hand/install	Charging input must be isolated from live system rail or power-path regulation
+F1	1	Littelfuse / Bel equivalent	10A resettable fuse or replaceable blade fuse	Fuse footprint/envelope	SMT/Hand	Battery output fuse between BMS and regulator
+SW_PWR	1	E-Switch / C&K equivalent	Latching power switch, >=10A DC or logic-controlled load switch	Panel switch envelope	Hand/install	Main disconnect or enable signal for regulator
+TH1	1	TDK / Murata equivalent	10k NTC thermistor, battery bay	NTC leaded/SMT envelope	Hand/install	Place against cell pack for charge/discharge temperature monitoring
+TP_BAT	1	Generic	Battery voltage test pads	2x test pads	SMT/Hand	Voltage reading/test points
+IR_RX1	1	Vishay	TSOP38238 38kHz infrared receiver module	Through-hole 3-pin IR receiver	Hand/install	Use for receiving/decoding common IR remote signals; place behind IR-transparent window
+IR_TX1	1	Vishay	TSAL6200 high-power 940nm infrared emitter LED	Through-hole 5mm IR LED	Hand/install	Use with MOSFET/NPN driver; do not drive directly from MCU GPIO
+Q_IR1	1	ON Semiconductor/Generic	2N7002 N-channel MOSFET for IR LED drive	SOT-23	SMT	Switches IR transmitter current from ESP32-S3 or Jetson GPIO
+R_IR1	1	Generic	10Ω-33Ω 0603 IR LED current-limiting resistor	0603	SMT	Select value based on desired pulse current and supply voltage
+R_IR2	1	Generic	100Ω 0603 MOSFET gate resistor	0603	SMT	Reduces ringing/noise on IR transmit line
+R_IR3	1	Generic	100kΩ 0603 MOSFET gate pulldown resistor	0603	SMT	Keeps IR transmitter off during boot/reset
+C_IR1	1	Generic	100nF 0603 IR receiver decoupling capacitor	0603	SMT	Place close to IR receiver VCC pin
+J_IR1	1	JST/GH or Generic	3-pin JST-GH IR service connector	JST-GH 1.25mm 3-pin	SMT/Hand-install	Optional service connector for removable IR board

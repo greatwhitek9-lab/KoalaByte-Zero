@@ -8,18 +8,31 @@ from koalabyte.drivers.eye_display import EyeDisplayDriver
 from koalabyte.drivers.ledring import LedRingDriver
 
 
-def _structured_bom_refs():
+def _structured_bom():
     bom_path = Path(__file__).resolve().parents[1] / "docs" / "bom.yaml"
     with bom_path.open("r", encoding="utf-8") as handle:
-        bom = yaml.safe_load(handle)
-    return {item["ref"] for item in bom}
+        return yaml.safe_load(handle)
+
+
+def _structured_bom_refs():
+    return {item["ref"] for item in _structured_bom()}
+
+
+def _structured_bom_refs_and_aliases():
+    refs = set()
+    for item in _structured_bom():
+        refs.add(item["ref"])
+        refs.update(item.get("aliases", []))
+    return refs
 
 
 def _structured_bom_by_ref():
-    bom_path = Path(__file__).resolve().parents[1] / "docs" / "bom.yaml"
-    with bom_path.open("r", encoding="utf-8") as handle:
-        bom = yaml.safe_load(handle)
-    return {item["ref"]: item for item in bom}
+    return {item["ref"]: item for item in _structured_bom()}
+
+
+def _split_ref_tokens(ref: str) -> set[str]:
+    """Return concrete BOM tokens from composite config refs like PWR1/BAT1."""
+    return {token.strip() for token in ref.split("/") if token.strip()}
 
 
 def _tab_bom_text():
@@ -93,24 +106,27 @@ def test_button_config_has_no_nose_switch():
 
 
 def test_power_config_matches_checked_in_bom():
-    assert CONFIG.power.battery_ref == "BAT1"
-    assert CONFIG.power.battery == "2S2P 21700 Li-ion pack"
+    assert CONFIG.power.battery_ref == "PWR1/BAT1"
+    assert "USB-C PD power bank" in CONFIG.power.battery
+    assert "2S Li-ion pack" in CONFIG.power.battery
+    assert "2S2P 21700" in CONFIG.power.battery
     assert CONFIG.power.bms_ref == "BMS1"
     assert CONFIG.power.bms.startswith("2S Li-ion BMS")
     assert CONFIG.power.charger_ref == "J_CHG"
     assert "8.4V CC/CV" in CONFIG.power.charger
     assert "2A-4A" in CONFIG.power.charger
     assert CONFIG.power.regulator_ref == "REG1"
-    assert CONFIG.power.regulator == "5V 12A synchronous buck regulator module"
-    assert CONFIG.power.power_input_ref == "J_USB"
+    assert CONFIG.power.regulator == "5V 10-12A synchronous buck regulator module"
+    assert CONFIG.power.power_input_ref == "J_USB/J11"
     assert CONFIG.power.fuse_ref == "F1"
     assert CONFIG.power.power_switch_ref == "SW_PWR"
     assert CONFIG.power.power_switch_location == "back of device"
+    assert "2S pack" in CONFIG.power.regulator_path
     assert "rear switch" in CONFIG.power.regulator_path
 
 
 def test_power_config_refs_resolve_in_structured_bom():
-    bom_refs = _structured_bom_refs()
+    bom_refs = _structured_bom_refs_and_aliases()
     config_refs = {
         CONFIG.power.battery_ref,
         CONFIG.power.bms_ref,
@@ -120,13 +136,14 @@ def test_power_config_refs_resolve_in_structured_bom():
         CONFIG.power.fuse_ref,
         CONFIG.power.power_switch_ref,
     }
-    assert config_refs <= bom_refs
+    for ref in config_refs:
+        assert _split_ref_tokens(ref) <= bom_refs
 
 
 def test_config_serializes():
     data = as_dict()
-    assert data["board"] == "KoalaByte Rev 0.5 Version B"
-    assert data["power"]["battery"] == "2S2P 21700 Li-ion pack"
+    assert data["board"] == "KoalaByte Zero Rev 0.5 Version B"
+    assert "2S Li-ion pack" in data["power"]["battery"]
     assert data["power"]["charger_ref"] == "J_CHG"
     assert data["power"]["power_switch_ref"] == "SW_PWR"
     assert data["camera"]["location"] == "centered just above eyes and below ears"

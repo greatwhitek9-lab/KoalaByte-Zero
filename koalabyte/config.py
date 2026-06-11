@@ -1,6 +1,7 @@
-"""KoalaByte Rev 0.5 hardware configuration.
+"""KoalaByte Zero Rev 0.5 hardware configuration.
 
-This file is the single firmware truth source. Keep it aligned with docs/bom.yaml.
+This file is the single firmware truth source. Keep it aligned with docs/bom.yaml
+and docs/koalabyte_zero_placement_update.md.
 """
 from __future__ import annotations
 
@@ -23,7 +24,7 @@ class DisplayConfig:
     height: int = 480
     interface: str = "HDMI"
     touch_interface: str = "USB/I2C bridge, model dependent"
-    splash_asset: str = "assets/koalabyte_logo.png"
+    splash_asset: str = "assets/koalabyte_zero_logo.png"
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,7 @@ class EyeConfig:
     uart_port: str = "/dev/ttyTHS1"
     baudrate: int = 921600
     interface: str = "USB/UART"
-    mount_location: str = "above 3.5 inch touch screen"
+    mount_location: str = "front face, above 3.5 inch touch screen and below enlarged ears"
     left_theme: str = "ultraviolet"
     right_theme: str = "cyber_green"
     left_eye_display: str = "1.28 inch round IPS LCD"
@@ -56,17 +57,20 @@ class EyeDisplayConfig:
 class CameraConfig:
     model: str = "IMX708"
     interface: str = "CSI-0"
-    location: str = "front face, centered below the dual-eye display board and above the 3.5 inch touchscreen"
+    location: str = "nose pod / central front nose assembly between the two EYE1 round LCD displays"
     default_resolution: str = "4608x2592"
 
 
 @dataclass(frozen=True)
 class AntennaConfig:
-    wifi_internal: str = "dual internal 2.4/5 GHz antennas"
-    wifi_external: str = "dual external SMA/IPEX antenna option"
-    nfc: str = "left-ear internal NFC coil"
-    gps: str = "active ceramic patch antenna"
-    subghz: str = "CC1101 tuned antenna matched to selected band"
+    default_external_count: int = 3
+    optional_lte_external_count: int = 4
+    wifi_bt_external: str = "top/rear-left external WiFi/Bluetooth antenna, 2.4/5 GHz, IPEX/SMA feed"
+    lora_subghz_external: str = "top/rear LoRa/Sub-GHz external antenna matched to selected 868/915 MHz or regional band"
+    sdr_external: str = "right-side or rear-right SMA external SDR antenna for RTL-SDR receive"
+    optional_lte_external: str = "optional cellular / 4G LTE external antenna; install only for LTE build"
+    nfc: str = "left-ear internal NFC coil; not an external whip antenna"
+    gps: str = "active ceramic patch antenna on top/rear deck with sky-facing clearance"
 
 
 @dataclass(frozen=True)
@@ -74,7 +78,8 @@ class WirelessConfig:
     wifi_chipset: str = "MediaTek MT7921K"
     wifi_bus: str = "M.2 Key-E PCIe"
     internal_antennas: int = 2
-    external_antennas: int = 2
+    default_external_antennas: int = 3
+    optional_lte_external_antennas: int = 4
     bluetooth_coprocessor: str = "nRF52840"
     bluetooth_uart: str = "/dev/ttyTHS2"
     antennas: AntennaConfig = field(default_factory=AntennaConfig)
@@ -82,13 +87,15 @@ class WirelessConfig:
 
 @dataclass(frozen=True)
 class ButtonConfig:
-    f1: str = "ESP32-S3 UART command: F1"
-    f2: str = "ESP32-S3 UART command: F2"
-    f3: str = "ESP32-S3 UART command: F3"
-    f4: str = "ESP32-S3 UART command: F4"
-    f5: str = "ESP32-S3 UART command: F5"
-    f6: str = "ESP32-S3 UART command: F6"
-    nose_switch_gpio: int = 15
+    f1: str = "front lower-right vertical stack: ESP32-S3 UART command F1"
+    f2: str = "front lower-right vertical stack: ESP32-S3 UART command F2"
+    f3: str = "front lower-right vertical stack: ESP32-S3 UART command F3"
+    f4: str = "reserved rear/side service command F4"
+    f5: str = "reserved rear/side service command F5"
+    f6: str = "reserved rear/side service command F6"
+    dpad: str = "front lower-left D-pad"
+    rear_power_switch: str = "SW_PWR rear/back-mounted physical power on/off switch"
+    nose_switch_gpio: int | None = None
 
 
 @dataclass(frozen=True)
@@ -120,11 +127,14 @@ class PeripheralConfig:
     nfc_coil_location: str = "inside left ear"
     gps_port: str = "/dev/ttyTHS0"
     gps_baudrate: int = 9600
+    gps_antenna_location: str = "top/rear active ceramic patch, sky-facing"
     cc1101_bus: int = 0
     cc1101_cs: int = 0
     rtl_sdr_bus: str = "USB3"
     ir_rx_gpio: int = 23
     ir_tx_gpio: int = 24
+    ir_rx_location: str = "top-of-head/front brow IR-transparent window"
+    ir_tx_location: str = "top-of-head/front brow IR-transparent window adjacent to IR receiver"
     buttons: ButtonConfig = field(default_factory=ButtonConfig)
 
 
@@ -145,8 +155,9 @@ class SafetyConfig:
 
 @dataclass(frozen=True)
 class KoalaByteConfig:
-    version: str = "0.5.0"
-    board: str = "KoalaByte Rev 0.5 Version B"
+    version: str = "0.5.1"
+    product_name: str = "Koalabyte Zero"
+    board: str = "KoalaByte Zero Rev 0.5 Version B"
     main_compute: str = "NVIDIA Jetson Orin Nano Super 8GB"
     display: DisplayConfig = field(default_factory=DisplayConfig)
     eyes: EyeConfig = field(default_factory=EyeConfig)
@@ -165,6 +176,7 @@ def as_dict() -> Dict[str, object]:
     """Return a compact serializable config summary."""
     return {
         "version": CONFIG.version,
+        "product_name": CONFIG.product_name,
         "board": CONFIG.board,
         "main_compute": CONFIG.main_compute,
         "display": CONFIG.display.__dict__,

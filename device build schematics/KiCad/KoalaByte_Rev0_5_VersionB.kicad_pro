@@ -1,0 +1,42 @@
+{
+  "board": {
+    "design_settings": {
+      "defaults": {
+        "board_outline_line_width": 0.1,
+        "copper_line_width": 0.25,
+        "silk_line_width": 0.15
+      }
+    }
+  },
+  "boards": ["KoalaByte_Rev0_5_VersionB.kicad_pcb"],
+  "meta": {
+    "filename": "KoalaByte_Rev0_5_VersionB.kicad_pro",
+    "version": 1
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "name": "Default",
+        "track_width": 0.25,
+        "clearance": 0.2,
+        "via_diameter": 0.8,
+        "via_drill": 0.4
+      },
+      {
+        "name": "PWR_10A_STARTER",
+        "track_width": 1.5,
+        "clearance": 0.4,
+        "via_diameter": 1.2,
+        "via_drill": 0.6
+      }
+    ],
+    "meta": {"version": 3}
+  },
+  "text_variables": {
+    "PRODUCT": "Koalabyte Zero",
+    "REVISION": "Rev0.5 Version B",
+    "CAMERA": "IMX708",
+    "DISPLAY": "3.5in HDMI 800x480",
+    "POWER": "5V 10-12A"
+  }
+}

@@ -87,7 +87,7 @@ class CyberpetConfig:
             }
         if self.PERSONALITY_TIERS is None:
             self.PERSONALITY_TIERS = {
-                "kid": (1, 10),
+                "noob": (1, 10),
                 "hacker": (11, 25),
                 "elite": (26, 50),
                 "legend": (51, 100),

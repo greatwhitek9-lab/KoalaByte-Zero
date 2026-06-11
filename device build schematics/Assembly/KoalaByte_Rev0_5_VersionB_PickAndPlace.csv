@@ -10,6 +10,7 @@ J8,CC1101_SPI,Conn_01x08_2.54mm,91.00,52.00,0,Top,SPI + GDO lines
 J9,LEGACY_EYE_DNP,Conn_01x03_2.54mm,108.00,15.00,90,Top,DNP legacy eye connector; Rev0.5 uses EYE1 ESP32-S3 dual 1.28in IPS display board
 J10,BUTTONS,Conn_01x10_2.54mm,108.00,36.00,90,Top,Button matrix / direct GPIO
 J11,PWR_IN_5V,JST_VH_2,10.00,72.00,0,Top,5V main input
+J12,MIC1_RIGHT_EAR_I2S,Conn_01x06_1.25mm,112.00,52.00,90,Top,"Right-ear microphone harness: 3V3,GND,I2S_BCLK,I2S_LRCLK,I2S_DIN,SHIELD/NC"
 REG2,3V3_REG,SOT-223-3,28.00,72.00,0,Top,Optional local 3.3V regulator
 F1,10A_MAIN_FUSE,Fuse_1812,45.00,72.00,0,Top,Main rail protection sized for 10-12A power path; validate during current testing
 Q1,IR_DRV,SOT-23,62.00,72.00,0,Top,IR LED driver
@@ -18,3 +19,4 @@ R2,100R,R_0805,78.00,72.00,0,Top,IR base/gate resistor
 C1,10uF,C_0805,86.00,72.00,0,Top,3V3 decoupling
 C2,1000uF,CP_Radial_D8,98.00,72.00,0,Top,Optional bulk capacitance for 5V rail; not dedicated to legacy eyes in current Rev0.5
 SW_PWR,REAR_POWER_SWITCH,Panel_Switch_Harness,112.00,72.00,90,Top,Rear/back-mounted power switch harness or regulator-enable control; not a PCB-mounted front/nose switch
+MIC1,I2S_MEMS_MIC_RIGHT_EAR,OffBoard_Module,0.00,0.00,0,Offboard,Mount inside right ear with acoustic port; route to J12 for KillerKoala voice input

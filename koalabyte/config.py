@@ -57,6 +57,25 @@ class EyeDisplayConfig:
 
 
 @dataclass(frozen=True)
+class AiBridgeConfig:
+    """Voice/AI bridge between the EYE1 ESP32-S3 board and Jetson AI runtime."""
+
+    ref: str = "EYE1_AI_BRIDGE"
+    controller_ref: str = "EYE1"
+    transport: str = "USB/UART JSONL voice_event bridge"
+    default_microphone_ref: str = "EYE1"
+    default_microphone: str = "ESP32-S3 dual-eye board onboard microphone"
+    wake_word: str = "KillerKoala"
+    transcript_route: str = (
+        "EYE1 onboard mic -> ESP32-S3 wake word/audio capture -> Jetson speech-to-text "
+        "-> KoalaByteCompanion.speak(transcript)"
+    )
+    forwards_to: str = "KoalaByteCompanion.speak"
+    requires_confirmation_for_actions: bool = True
+    lab_mode_required: bool = True
+
+
+@dataclass(frozen=True)
 class CameraConfig:
     ref: str = "CAM1"
     model: str = "IMX708"
@@ -107,11 +126,15 @@ class UsbConfig:
 class AudioConfig:
     speaker_ref: str = "SPK1"
     speaker: str = "8 Ohm mini speaker / piezo buzzer"
-    microphone_ref: str = "MIC1"
-    microphone: str = "I2S MEMS digital microphone module"
-    microphone_interface: str = "I2S or USB audio adapter"
-    microphone_location: str = "inside right ear"
-    microphone_purpose: str = "speech input for KoalaByte AI pet voice interaction"
+    primary_microphone_ref: str = "EYE1"
+    primary_microphone: str = "ESP32-S3 dual-eye board onboard microphone"
+    primary_microphone_interface: str = "ESP32-S3 onboard audio capture path forwarded over USB/UART"
+    primary_microphone_purpose: str = "default wake-word and speech capture for KoalaByte AI pet interaction"
+    external_microphone_ref: str = "MIC1"
+    external_microphone: str = "I2S MEMS digital microphone module / USB audio microphone module"
+    external_microphone_optional: bool = True
+    external_microphone_install: str = "DNP unless enclosure testing shows the onboard EYE1 mic needs better pickup"
+    external_microphone_location: str = "inside right ear optional acoustic port"
     purpose: str = "UI sounds, alerts, and voice interaction"
     optional_amp_recommended: bool = True
 
@@ -212,6 +235,7 @@ class KoalaByteConfig:
     display: DisplayConfig = field(default_factory=DisplayConfig)
     eyes: EyeConfig = field(default_factory=EyeConfig)
     eye_display: EyeDisplayConfig = field(default_factory=EyeDisplayConfig)
+    ai_bridge: AiBridgeConfig = field(default_factory=AiBridgeConfig)
     camera: CameraConfig = field(default_factory=CameraConfig)
     wireless: WirelessConfig = field(default_factory=WirelessConfig)
     usb: UsbConfig = field(default_factory=UsbConfig)
@@ -235,6 +259,7 @@ def as_dict() -> Dict[str, object]:
         "display": CONFIG.display.__dict__,
         "eyes": CONFIG.eyes.__dict__,
         "eye_display": CONFIG.eye_display.__dict__,
+        "ai_bridge": CONFIG.ai_bridge.__dict__,
         "leds": CONFIG.eye_display.__dict__,
         "camera": CONFIG.camera.__dict__,
         "wireless": {

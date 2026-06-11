@@ -54,10 +54,10 @@ class EyeDisplayConfig:
 
 @dataclass(frozen=True)
 class CameraConfig:
-    model: str = "IMX219"
+    model: str = "IMX708"
     interface: str = "CSI-0"
-    location: str = "right eye"
-    default_resolution: str = "1920x1080"
+    location: str = "front face, centered below the dual-eye display board and above the 3.5 inch touchscreen"
+    default_resolution: str = "4608x2592"
 
 
 @dataclass(frozen=True)

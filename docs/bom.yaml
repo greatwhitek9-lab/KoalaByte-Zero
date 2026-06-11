@@ -163,6 +163,24 @@
   mount: Hand/install
   notes: Prototype power source; use certified cells/modules and include fuse.
 
+- ref: BMS1
+  qty: 1
+  category: Power / Battery Protection
+  manufacturer: Daly / Generic equivalent
+  mpn: 2S Li-ion BMS with balancing and overcharge protection
+  footprint: 2S BMS module envelope with high-current wiring clearance
+  mount: Hand/install
+  notes: Required when using the 2S2P 21700 Li-ion pack option; keep wiring short, fused, and serviceable.
+
+- ref: J_CHG
+  qty: 1
+  category: Power / Charging
+  manufacturer: Generic / CUI / Amphenol equivalent
+  mpn: 2S Li-ion charger input, 8.4V CC/CV, 2A-4A target
+  footprint: Panel connector or keyed charging harness
+  mount: Hand/install
+  notes: Charging input must be isolated from live system rail or power-path regulation.
+
 - ref: REG1
   qty: 1
   category: Power
@@ -189,6 +207,16 @@
   footprint: PTC/inline/fuse footprint
   mount: SMT/Hand
   notes: Main input protection sized for the 10-12A power path after current testing.
+
+- ref: J_USB
+  aliases: [J11]
+  qty: 1
+  category: Power / USB-C Input
+  manufacturer: USB-C connector / PD trigger module equivalent
+  mpn: USB-C power input / 5V main input; validate PD/current design
+  footprint: USB-C connector, PD trigger, or harnessed module envelope
+  mount: SMT/Hand
+  notes: Main USB-C or 5V input path. Validate PD negotiation/current limit before tying to the system rail.
 
 - ref: J1-J14
   qty: 14

@@ -10,7 +10,7 @@ This branch establishes one canonical Python runtime for the Jetson side of the 
 - Main screen: 3.5 inch HDMI touchscreen, 800x480 target
 - Eye controller: ESP32-S3-DualEye-LCD-1.28
 - Eye/LED theme: left ultraviolet, right cyber green
-- Camera: IMX219 on CSI-0, right eye location
+- Camera: IMX708 on CSI-0, front face centered below the dual-eye display board and above the 3.5 inch touchscreen
 - Wireless: MediaTek MT7921K on M.2 Key-E PCIe
 - NFC: PN532 over I2C with coil inside the left ear
 - GPS: u-blox NEO-M8N over UART

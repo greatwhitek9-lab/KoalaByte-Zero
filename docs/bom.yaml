@@ -1,300 +1,272 @@
-# BOM for Koalabyte firmware (structured)
-# Converted from docs/BOM (tab-separated) into YAML for reliable parsing.
-# Current product display name: Koalabyte Zero.
-# Placement truth: camera in nose pod, IR RX/TX on top of head, 3 external antennas by default.
+# BOM for Koalabyte Zero Rev 0.5 Version B firmware + production starter package
+# Keep aligned with koalabyte/config.py and device build schematics/.
+# Normalized production target: DS1 800x480, CAM1 IMX708, REG1 5V 10-12A, F1 10A-class protection.
 
-- ref: U1
+- ref: A1
+  aliases: [U1]
   qty: 1
+  category: Compute
   manufacturer: NVIDIA
-  mpn: Jetson Orin Nano Super developer/module interface
-  footprint: Carrier/mezzanine or mounting envelope
+  mpn: Jetson Orin Nano Super Developer Kit
+  footprint: Dev kit module / carrier mounting envelope
   mount: Hand/install
-  notes: Use official NVIDIA carrier pinout and mechanical drawing before order
-
-- ref: DS1
-  qty: 1
-  manufacturer: Generic
-  mpn: 3.5 inch HDMI LCD, 5V
-  footprint: LCD module mounting envelope + HDMI clearance
-  mount: Hand/install
-  notes: Jetson-driven display; mounted in lower front face
+  notes: Main AI/compute board; keep as off-the-shelf module for Rev0.5 and validate official NVIDIA mechanical/pinout docs before any custom carrier.
 
 - ref: EYE1
   qty: 1
+  category: Eye Display / MCU
   manufacturer: ESP32-S3 AIoT display module
   mpn: ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays
   footprint: Dual round LCD eye board panel mount + USB/UART clearance
   mount: Hand/install
-  notes: Replaces separate LED_L/LED_R WS2812 eye rings; mounted above the 3.5 inch touch screen and below enlarged ears as Koalabyte Zero dual eyes
+  notes: KoalaByte dual-eye display/controller board above the 3.5 inch main screen and below enlarged ears; replaces separate legacy eye-ring concept.
 
-- ref: U2
+- ref: DS1
   qty: 1
-  manufacturer: Espressif
-  mpn: ESP32-S3-WROOM-1-N16R8
-  footprint: ESP32-S3 WROOM module footprint
-  mount: SMT
-  notes: Auxiliary MCU for UI/buttons/LED/safety interlock if not integrated into EYE1
+  category: Display
+  manufacturer: Generic
+  mpn: 3.5 inch HDMI LCD touchscreen, 800x480, 5V
+  footprint: HDMI + USB touch module mounting envelope
+  mount: Hand/install
+  notes: Main KoalaByte Version B display in lower front face; normalized from production mismatch to 800x480.
 
 - ref: CAM1
   qty: 1
-  manufacturer: Arducam
+  category: Camera
+  manufacturer: Arducam / Raspberry Pi compatible
   mpn: IMX708 CSI camera module
   footprint: Camera board mount + FFC clearance
   mount: Hand/install
-  notes: Camera moved to nose pod / central front nose assembly between the two EYE1 round LCD displays; verify Jetson CSI cable orientation
+  notes: Nose-pod CSI camera between the two EYE1 round LCD displays; verify Jetson CSI cable orientation.
 
-- ref: U_RF1
+- ref: HUB1
   qty: 1
-  manufacturer: MediaTek
-  mpn: MT7921K M.2 E-Key
-  footprint: M.2 E-Key socket
+  category: USB
+  manufacturer: Generic / StarTech / Adafruit equivalent
+  mpn: Mini internal powered USB 3.0 hub
+  footprint: USB hub module envelope
   mount: Hand/install
-  notes: WiFi/BT module; route to external WiFi/Bluetooth antenna in the default 3-antenna layout; validate antennas and regulatory use
+  notes: Internal expansion for SDR, Wi-Fi, debug, and USB touch. Powered hub preferred.
+
+- ref: WIFI1
+  aliases: [U_RF1]
+  qty: 1
+  category: Wi-Fi/BT
+  manufacturer: MediaTek
+  mpn: MT7921K M.2 Key-E or USB Wi-Fi adapter
+  footprint: M.2 E-Key socket or USB adapter envelope
+  mount: Hand/install
+  notes: Wi-Fi/BLE interface for authorized testing; route to external WiFi/Bluetooth antenna and validate regulatory use.
+
+- ref: SDR1
+  qty: 1
+  category: SDR
+  manufacturer: RTL-SDR Blog / Generic
+  mpn: RTL-SDR Blog V4 or RTL2832U + R820T2
+  footprint: USB dongle/module envelope
+  mount: Hand/install
+  notes: Receive-only SDR module; route to external SMA.
+
+- ref: GPS1
+  qty: 1
+  category: GPS
+  manufacturer: u-blox / Generic
+  mpn: NEO-M8N GPS module
+  footprint: UART module/header
+  mount: Hand/install
+  notes: GPS/wardriving location module; place antenna away from Jetson, battery, and high-current wiring.
+
+- ref: NFC1
+  aliases: [U_RF2]
+  qty: 1
+  category: NFC
+  manufacturer: Elechouse / Adafruit / Generic
+  mpn: PN532 NFC module
+  footprint: I2C module/header
+  mount: Hand/install
+  notes: NFC read/write/emulate support; coil remains internal inside left ear and is not an external whip antenna. Use level-safe 3.3V mode.
+
+- ref: RF1
+  aliases: [U_RF4]
+  qty: 1
+  category: Sub-GHz
+  manufacturer: Ebyte / Generic
+  mpn: CC1101 module
+  footprint: SPI module/header
+  mount: Hand/install
+  notes: Sub-GHz radio experiments; route to LoRa/Sub-GHz external antenna and obey RF law.
+
+- ref: LORA1
+  qty: 1
+  category: LoRa
+  manufacturer: HopeRF / Generic
+  mpn: SX1276/SX1278 LoRa module
+  footprint: SPI module/header
+  mount: Hand/install
+  notes: LoRa mesh prototype; use correct regional frequency. Share selected external LoRa/Sub-GHz antenna path only with validated RF switch/harness if required.
+
+- ref: IR1
+  aliases: [IR_RX1]
+  qty: 1
+  category: IR Receiver
+  manufacturer: Vishay / Generic
+  mpn: VS1838B / TSOP38238 38kHz infrared receiver module
+  footprint: Through-hole/module
+  mount: Hand/install
+  notes: IR reader/receiver on top-of-head/front brow behind an IR-transparent window.
+
+- ref: IRTX1-3
+  aliases: [IR_TX1]
+  qty: 3
+  category: IR TX
+  manufacturer: Vishay / Generic
+  mpn: 940nm high-output IR LED
+  footprint: 5mm LED
+  mount: Hand/install
+  notes: IR transmitters on top-of-head/front brow adjacent to IR receiver; use Q1 transistor/MOSFET driver, not direct GPIO.
+
+- ref: Q1
+  aliases: [Q_IR1]
+  qty: 1
+  category: Driver
+  manufacturer: ON Semiconductor / Generic
+  mpn: 2N2222 / AO3400 / 2N7002 IR LED driver
+  footprint: TO-92 / SOT-23
+  mount: SMT/Hand
+  notes: IR LED drive stage; add resistor sized to LED current.
+
+- ref: SPK1
+  qty: 1
+  category: Audio
+  manufacturer: Generic
+  mpn: 8 Ohm mini speaker / piezo buzzer
+  footprint: Speaker/buzzer module envelope
+  mount: Hand/install
+  notes: UI sounds and alerts; optional amplifier recommended for speaker.
+
+- ref: SW1-SW8
+  qty: 8
+  category: Controls
+  manufacturer: Generic / E-Switch equivalent
+  mpn: Tactile buttons / D-pad / side buttons
+  footprint: Panel mount / button harness
+  mount: Hand/install
+  notes: F1-F6/menu/select/back controls; debounce in ESP32 firmware. J10 carries button matrix/direct GPIO.
+
+- ref: PWR1
+  aliases: [BAT1]
+  qty: 1
+  category: Power
+  manufacturer: Anker / Adafruit / Custom cell pack equivalent
+  mpn: USB-C PD power bank or 2S Li-ion pack + BMS
+  footprint: Module/battery bay + keyed high-current connector
+  mount: Hand/install
+  notes: Prototype power source; use certified cells/modules and include fuse.
+
+- ref: REG1
+  qty: 1
+  category: Power
+  manufacturer: Pololu / DFRobot / Murata equivalent
+  mpn: 5V 10-12A synchronous buck regulator module
+  footprint: Buck regulator module envelope with thermal clearance
+  mount: Hand/install
+  notes: Main 5V rail for Jetson + display + USB load. Minimum 10A, preferred 12A.
+
+- ref: REG2
+  qty: 1
+  category: Power
+  manufacturer: Pololu / DigiKey equivalent
+  mpn: 3.3V 1A regulator
+  footprint: Module / SOT-223
+  mount: SMT/Hand
+  notes: Sensors and logic rail; common ground required.
+
+- ref: F1
+  qty: 1
+  category: Protection
+  manufacturer: Littelfuse / Bel equivalent
+  mpn: 10A resettable fuse or replaceable blade fuse
+  footprint: PTC/inline/fuse footprint
+  mount: SMT/Hand
+  notes: Main input protection sized for the 10-12A power path after current testing.
+
+- ref: J1-J14
+  qty: 14
+  category: Connectors
+  manufacturer: JST / Molex / Amphenol / Generic
+  mpn: JST-XH/PH, 2.54mm headers, SMA bulkheads
+  footprint: Mixed serviceable wiring harness connectors
+  mount: SMT/Hand
+  notes: Use locking connectors for handheld reliability. See device build schematics/Docs/KoalaByte_Rev0_5_VersionB_Net_Summary.txt.
+
+- ref: SW_PWR
+  qty: 1
+  category: Controls / Power
+  manufacturer: E-Switch / C&K equivalent
+  mpn: Rear panel latching power on/off switch, >=10A DC or logic-controlled load switch
+  footprint: Rear enclosure panel mount or harnessed switch
+  mount: Hand/install
+  notes: Back-mounted KoalaByte power on/off switch; main disconnect or regulator-enable path; replaces nose switch concept.
 
 - ref: ANT_WIFI_BT
   qty: 1
+  category: Antenna
   manufacturer: Generic
   mpn: 2.4/5GHz WiFi/Bluetooth whip antenna, IPEX/SMA feed as selected
   footprint: External antenna / bulkhead mount
   mount: Hand/install
-  notes: Default external antenna 1; place top/rear-left or top/rear service position
-
-- ref: U_RF2
-  qty: 1
-  manufacturer: Elechouse/Generic
-  mpn: PN532 NFC module
-  footprint: Header/castellated module
-  mount: Hand/install
-  notes: I2C NFC; coil remains internal inside left ear, not an external antenna
-
-- ref: U_RF3
-  qty: 1
-  manufacturer: Raytac/Adafruit
-  mpn: nRF52840 module
-  footprint: Header/castellated module
-  mount: Hand/install
-  notes: BLE coprocessor
-
-- ref: U_RF4
-  qty: 1
-  manufacturer: Ebyte/Generic
-  mpn: CC1101 module
-  footprint: Header/castellated module
-  mount: Hand/install
-  notes: Sub-GHz module; route to LoRa/Sub-GHz external antenna; observe local law
-
-- ref: LORA1
-  qty: 1
-  manufacturer: HopeRF/Generic
-  mpn: SX1276/SX1278 LoRa module
-  footprint: Header/castellated module
-  mount: Hand/install
-  notes: LoRa mesh prototype; share selected external LoRa/Sub-GHz antenna path or use separate validated RF switch/harness if required
+  notes: Default external antenna 1; top/rear-left or top/rear service position.
 
 - ref: ANT_LORA_SUBGHZ
   qty: 1
+  category: Antenna
   manufacturer: Generic
   mpn: LoRa/Sub-GHz whip antenna, 868/915MHz or regional band as selected, SMA connector
   footprint: External SMA antenna / bulkhead mount
   mount: Hand/install
-  notes: Default external antenna 2; place top/rear-center or top/rear-right service position; match antenna to selected band
-
-- ref: GPS1
-  qty: 1
-  manufacturer: u-blox/Generic
-  mpn: NEO-M8N GPS module
-  footprint: Module mount/header
-  mount: Hand/install
-  notes: UART GPS; use active ceramic patch antenna on top/rear deck with sky-facing clearance
-
-- ref: ANT_GPS_PATCH
-  qty: 1
-  manufacturer: Generic
-  mpn: Active ceramic GPS patch antenna
-  footprint: Patch antenna module/envelope
-  mount: Hand/install
-  notes: GPS is not counted as an external whip antenna; keep away from Jetson, battery, and high-current wiring
-
-- ref: SDR1
-  qty: 1
-  manufacturer: RTL-SDR
-  mpn: RTL2832U + R820T2 USB SDR
-  footprint: USB module/adapter envelope
-  mount: Hand/install
-  notes: USB SDR; route to right-side or rear-right SMA external SDR antenna
+  notes: Default external antenna 2; top/rear-center or top/rear-right service position; match antenna to selected band.
 
 - ref: ANT_SDR
   qty: 1
+  category: Antenna
   manufacturer: Generic
   mpn: SDR whip antenna / SMA-connected antenna matched to use case
   footprint: External SMA antenna / bulkhead mount
   mount: Hand/install
-  notes: Default external antenna 3; place on right-side SMA or rear-right SMA position for RTL-SDR receive
+  notes: Default external antenna 3; right-side SMA or rear-right SMA position for RTL-SDR receive.
 
 - ref: ANT_LTE_OPT
   qty: 0
+  category: Antenna / Optional
   manufacturer: Generic
   mpn: Optional cellular / 4G LTE antenna
   footprint: External LTE antenna / bulkhead mount
   mount: DNP unless LTE module is installed
-  notes: Optional 4th external antenna only for LTE build; do not populate on default Koalabyte Zero build
+  notes: Optional 4th external antenna only for LTE build. Do not populate on default Koalabyte Zero build.
 
-- ref: J_USB
+- ref: ANT_GPS_PATCH
   qty: 1
-  manufacturer: GCT/Amphenol
-  mpn: USB-C power input 16-pin
-  footprint: USB-C receptacle
-  mount: SMT
-  notes: 5V input; validate PD/current design
-
-- ref: J_HINGE
-  qty: 2
-  manufacturer: Molex/Amphenol
-  mpn: 30-pin 0.5mm FFC
-  footprint: FFC_30P_0.5mm
-  mount: SMT
-  notes: Head/base interconnect
-
-- ref: J_LCD
-  qty: 1
+  category: Antenna
   manufacturer: Generic
-  mpn: HDMI/5V display connector or harness
-  footprint: HDMI/FFC clearance
-  mount: SMT/Hand
-  notes: Validate selected display cable orientation
-
-- ref: BAT1
-  qty: 1
-  manufacturer: Custom / cell holder assembly
-  mpn: 2S2P 21700 Li-ion pack, 7.4V nominal, 8.4V full, 74Wh target
-  footprint: Battery bay + keyed high-current connector
+  mpn: Active ceramic GPS patch antenna
+  footprint: Patch antenna module/envelope
   mount: Hand/install
-  notes: Internal removable/serviceable battery pack
+  notes: GPS is not counted as an external whip antenna; mount on top/rear deck with sky-facing clearance.
 
-- ref: BMS1
+- ref: MECH1
   qty: 1
-  manufacturer: Generic / Daly / JBD equivalent
-  mpn: 2S Li-ion BMS, 10A continuous minimum, 15A peak preferred
-  footprint: BMS module envelope 45x25mm + mounting tape/standoffs
-  mount: Hand/install
-  notes: Cell balancing, overcharge, overdischarge protection
+  category: Mechanical
+  manufacturer: Local print service
+  mpn: 3D printed clamshell enclosure
+  footprint: PETG/ABS/nylon Version B housing
+  mount: Mechanical
+  notes: Add heat inserts and airflow.
 
-- ref: REG1
+- ref: FAST1
   qty: 1
-  manufacturer: Pololu / DFRobot / Murata equivalent
-  mpn: 5V 12A synchronous buck regulator module
-  footprint: Buck regulator module envelope 50x30mm, thermal clearance
-  mount: Hand/install
-  notes: Converts 2S pack to regulated 5V system voltage
-
-- ref: J_BAT
-  qty: 1
-  manufacturer: Amass / Molex equivalent
-  mpn: XT30 / Micro-Fit 3.0 2-pin battery connector, 15A class
-  footprint: High-current 2-pin connector footprint/envelope
-  mount: Hand/install
-  notes: Keyed battery input connector from BMS output pack
-
-- ref: J_CHG
-  qty: 1
-  manufacturer: USB-C PD / 2S charger module
-  mpn: 2S Li-ion charger input, 8.4V CC/CV, 2A-4A target
-  footprint: Charger module envelope 35x25mm
-  mount: Hand/install
-  notes: Charging input must be isolated from live system rail or power-path regulation
-
-- ref: F1
-  qty: 1
-  manufacturer: Littelfuse / Bel equivalent
-  mpn: 10A resettable fuse or replaceable blade fuse
-  footprint: Fuse footprint/envelope
-  mount: SMT/Hand
-  notes: Battery output fuse between BMS and regulator
-
-- ref: SW_PWR
-  qty: 1
-  manufacturer: E-Switch / C&K equivalent
-  mpn: Latching power switch, >=10A DC or logic-controlled load switch
-  footprint: Rear panel switch envelope
-  mount: Hand/install
-  notes: Rear/back-mounted main disconnect or regulator-enable signal; replaces nose switch concept
-
-- ref: TH1
-  qty: 1
-  manufacturer: TDK / Murata equivalent
-  mpn: 10k NTC thermistor, battery bay
-  footprint: NTC leaded/SMT envelope
-  mount: Hand/install
-  notes: Place against cell pack for charge/discharge temperature monitoring
-
-- ref: TP_BAT
-  qty: 1
-  manufacturer: Generic
-  mpn: Battery voltage test pads
-  footprint: 2x test pads
-  mount: SMT/Hand
-  notes: Voltage reading/test points
-
-- ref: IR_RX1
-  qty: 1
-  manufacturer: Vishay
-  mpn: TSOP38238 38kHz infrared receiver module
-  footprint: Through-hole 3-pin IR receiver
-  mount: Hand/install
-  notes: IR reader/receiver; place on top-of-head/front brow behind IR-transparent window
-
-- ref: IR_TX1
-  qty: 1
-  manufacturer: Vishay
-  mpn: TSAL6200 high-power 940nm infrared emitter LED
-  footprint: Through-hole 5mm IR LED
-  mount: Hand/install
-  notes: IR transmitter; place on top-of-head/front brow adjacent to IR receiver; use MOSFET/NPN driver and do not drive directly from MCU GPIO
-
-- ref: Q_IR1
-  qty: 1
-  manufacturer: ON Semiconductor/Generic
-  mpn: 2N7002 N-channel MOSFET for IR LED drive
-  footprint: SOT-23
-  mount: SMT
-  notes: Switches IR transmitter current from ESP32-S3 or Jetson GPIO
-
-- ref: R_IR1
-  qty: 1
-  manufacturer: Generic
-  mpn: 10Ω-33Ω 0603 IR LED current-limiting resistor
-  footprint: 0603
-  mount: SMT
-  notes: Select value based on desired pulse current and supply voltage
-
-- ref: R_IR2
-  qty: 1
-  manufacturer: Generic
-  mpn: 100Ω 0603 MOSFET gate resistor
-  footprint: 0603
-  mount: SMT
-  notes: Reduces ringing/noise on IR transmit line
-
-- ref: R_IR3
-  qty: 1
-  manufacturer: Generic
-  mpn: 100kΩ 0603 MOSFET gate pulldown resistor
-  footprint: 0603
-  mount: SMT
-  notes: Keeps IR transmitter off during boot/reset
-
-- ref: C_IR1
-  qty: 1
-  manufacturer: Generic
-  mpn: 100nF 0603 IR receiver decoupling capacitor
-  footprint: 0603
-  mount: SMT
-  notes: Place close to IR receiver VCC pin
-
-- ref: J_IR1
-  qty: 1
-  manufacturer: JST/GH or Generic
-  mpn: 3-pin JST-GH IR service connector
-  footprint: JST-GH 1.25mm 3-pin
-  mount: SMT/Hand-install
-  notes: Optional service connector for removable top-of-head IR board
+  category: Mechanical
+  manufacturer: Amazon / McMaster equivalent
+  mpn: M2.5/M3 screws, brass inserts, standoffs
+  footprint: Assorted assembly hardware
+  mount: Mechanical
+  notes: Use threadlocker where appropriate.

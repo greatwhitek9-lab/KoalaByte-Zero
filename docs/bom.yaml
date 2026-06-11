@@ -1,6 +1,6 @@
 # BOM for Koalabyte Zero Rev 0.5 Version B firmware + production starter package
 # Keep aligned with koalabyte/config.py and device build schematics/.
-# Normalized production target: DS1 800x480, CAM1 IMX708, REG1 5V 12A, F1 10A-class protection.
+# Normalized production target includes MIC1 right-ear voice microphone for the AI pet.
 
 - ref: A1
   aliases: [U1]
@@ -10,7 +10,7 @@
   mpn: Jetson Orin Nano Super Developer Kit
   footprint: Dev kit module / carrier mounting envelope
   mount: Hand/install
-  notes: Main AI compute board; keep as off-the-shelf module for Rev0.5 and validate official mechanical data.
+  notes: Main AI compute board; keep as off-the-shelf module for Rev0.5.
 
 - ref: EYE1
   qty: 1
@@ -38,6 +38,24 @@
   footprint: Camera board mount + FFC clearance
   mount: Hand/install
   notes: Camera is centered just above eyes and below ears; verify cable orientation.
+
+- ref: MIC1
+  qty: 1
+  category: Audio Input
+  manufacturer: Adafruit / SparkFun / Generic
+  mpn: I2S MEMS digital microphone module
+  footprint: Right-ear microphone module envelope + acoustic port
+  mount: Hand/install
+  notes: Inside right ear; speech input for KoalaByte AI pet voice interaction and KillerKoala wake word path.
+
+- ref: SPK1
+  qty: 1
+  category: Audio Output
+  manufacturer: Generic
+  mpn: 8 Ohm mini speaker / piezo buzzer
+  footprint: Speaker/buzzer module envelope
+  mount: Hand/install
+  notes: UI sounds, alerts, and optional AI pet voice response output; optional amplifier recommended.
 
 - ref: HUB1
   qty: 1
@@ -135,15 +153,6 @@
   mount: SMT/Hand
   notes: LED drive stage; add resistor sized to LED current.
 
-- ref: SPK1
-  qty: 1
-  category: Audio
-  manufacturer: Generic
-  mpn: 8 Ohm mini speaker / piezo buzzer
-  footprint: Speaker/buzzer module envelope
-  mount: Hand/install
-  notes: UI sounds and alerts; optional amplifier recommended for speaker.
-
 - ref: SW1-SW8
   qty: 8
   category: Controls
@@ -182,6 +191,7 @@
   notes: Charging input must be isolated from live system rail or power-path regulation.
 
 - ref: J_USB
+  aliases: [J11]
   qty: 1
   category: Power / USB
   manufacturer: Generic
@@ -189,6 +199,15 @@
   footprint: USB-C module or panel connector
   mount: Hand/install
   notes: Validate USB-C PD/current design before enclosure integration.
+
+- ref: J_MIC
+  qty: 1
+  category: Audio Connector
+  manufacturer: JST-GH / Molex PicoBlade equivalent
+  mpn: 6-pin right-ear microphone harness
+  footprint: 1.25mm/2.0mm keyed harness connector
+  mount: Hand/install
+  notes: Carries 3V3, GND, I2S_BCLK, I2S_LRCLK, I2S_DIN, and shield/NC between MIC1 and compute/audio interface.
 
 - ref: REG1
   qty: 1
@@ -287,7 +306,7 @@
   mpn: 3D printed clamshell enclosure
   footprint: PETG/ABS/nylon Version B housing
   mount: Mechanical
-  notes: Add heat inserts and airflow.
+  notes: Add heat inserts, airflow, and right-ear acoustic port for MIC1.
 
 - ref: FAST1
   qty: 1

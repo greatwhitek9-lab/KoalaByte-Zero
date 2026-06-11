@@ -1,8 +1,7 @@
 Ref	Qty	Manufacturer/Series	MPN / Module	Footprint strategy	Mount	Notes
 U1	1	NVIDIA	Jetson Orin Nano Super developer/module interface	Carrier/mezzanine or mounting envelope	Hand/install	Use official NVIDIA carrier pinout and mechanical drawing before order
 DS1	1	Generic	3.5 inch HDMI LCD, 5V	LCD module mounting envelope + HDMI clearance	Hand/install	Jetson-driven display
-EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Mounted above the 3.5 inch touch screen as KoalaByte dual eyes
-U2	1	Espressif	ESP32-S3-WROOM-1-N16R8	ESP32-S3 WROOM module footprint	SMT	Auxiliary MCU for UI/buttons/safety interlock if not integrated into EYE1
+EYE1	1	ESP32-S3 AIoT display module	ESP32-S3 1.28inch Double Eye Round LCD AIoT Development Board, Onboard Dual 1.28inch IPS Displays	Dual round LCD eye board panel mount + USB/UART clearance	Hand/install	Mounted above the 3.5 inch touch screen as KoalaByte dual eyes; onboard ESP32-S3 replaces standalone U2 WROOM in the production ZIP
 CAM1	1	Arducam	IMX708 CSI camera module	Centered camera mount above EYE1 and below enlarged ears + FFC clearance	Hand/install	Camera centered just above eyes and below ears
 U_RF1	1	MediaTek module	MT7921K M.2 E-Key	M.2 E-Key socket	Hand/install	WiFi/BT module; validate antennas and regulatory use
 U_RF2	1	Elechouse/Generic	PN532 NFC module	Header/castellated module	Hand/install	I2C NFC
